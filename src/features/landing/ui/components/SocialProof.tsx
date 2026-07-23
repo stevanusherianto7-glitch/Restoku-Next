@@ -48,12 +48,12 @@ export function SocialProof() {
       <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 sm:w-40 bg-gradient-to-l from-slate-950 to-transparent z-10"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Plain Text Title (No Pill Wrapper) */}
+        {/* Plain Text Title */}
         <p className="text-center text-xs font-mono uppercase tracking-widest text-slate-400 mb-8">
           Dipercaya oleh Brand Kuliner & Franchise Terkemuka Indonesia
         </p>
 
-        {/* 100% Transparent Logos (No Shadow Filter, Pure Original Images) */}
+        {/* 100% Transparent Logos (Enhanced Contrast & Brightness) */}
         <div className="flex overflow-hidden relative w-full">
           <div className="animate-marquee flex items-center gap-12 sm:gap-20 py-2">
             {marqueeClients.map((client, index) => (
@@ -64,7 +64,7 @@ export function SocialProof() {
                 <img
                   src={client.logo}
                   alt={client.name}
-                  className={`w-auto object-contain transition-transform duration-300 group-hover:scale-110 ${client.sizeClass}`}
+                  className={`w-auto object-contain filter contrast-[120%] brightness-[115%] group-hover:scale-110 transition-all duration-300 drop-shadow-sm ${client.sizeClass}`}
                 />
               </div>
             ))}
