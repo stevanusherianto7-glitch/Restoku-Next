@@ -53,7 +53,7 @@ export function SocialProof() {
           Dipercaya oleh Brand Kuliner & Franchise Terkemuka Indonesia
         </p>
 
-        {/* 100% Transparent Logos on Dark Canvas with White Glow Halo */}
+        {/* 100% Transparent Logos (No Shadow Filter, Pure Original Images) */}
         <div className="flex overflow-hidden relative w-full">
           <div className="animate-marquee flex items-center gap-12 sm:gap-20 py-2">
             {marqueeClients.map((client, index) => (
@@ -64,7 +64,7 @@ export function SocialProof() {
                 <img
                   src={client.logo}
                   alt={client.name}
-                  className={`w-auto object-contain transition-all duration-300 group-hover:scale-110 [filter:drop-shadow(0_0_8px_rgba(255,255,255,0.95))_drop-shadow(0_0_2px_rgba(255,255,255,1))] ${client.sizeClass}`}
+                  className={`w-auto object-contain transition-transform duration-300 group-hover:scale-110 ${client.sizeClass}`}
                 />
               </div>
             ))}
