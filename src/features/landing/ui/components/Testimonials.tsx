@@ -46,11 +46,11 @@ export function Testimonials() {
     <section id="testimoni" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950 text-white relative">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-16 max-w-3xl mx-auto">
+        <div className="text-center mb-16 max-w-5xl mx-auto">
           <span className="text-xs font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-3.5 py-1.5 rounded-full border border-amber-500/20">
             Kisah Sukses Mitra
           </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+          <h2 className="mt-4 text-xl sm:text-3xl md:text-4xl lg:text-[2.5rem] font-extrabold text-white tracking-tight leading-tight whitespace-normal md:whitespace-nowrap">
             Dipercaya oleh Ratusan Pemilik Restoran & Kuliner
           </h2>
           <p className="mt-4 text-base sm:text-lg text-slate-400">
