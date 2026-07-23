@@ -75,9 +75,9 @@ export const navigation: NavGroup[] = [
     roles: ["manager", "owner"],
     items: [
       { name: "Laporan Penjualan", href: "/reports", roles: ["manager", "owner"] },
-      { name: "Perbandingan Outlet", href: "/outlet-comparison", roles: ["owner"] },
-      { name: "Arus Kas", href: "/cash-flow", roles: ["owner"] },
-      { name: "Laba & Rugi", href: "/profit-loss", roles: ["owner"] },
+      { name: "Perbandingan Outlet", href: "/outlet-comparison", roles: ["manager", "owner"] },
+      { name: "Arus Kas", href: "/cash-flow", roles: ["manager", "owner"] },
+      { name: "Laba & Rugi", href: "/profit-loss", roles: ["manager", "owner"] },
       { name: "Laporan Produk", href: "/reports/products", roles: ["manager", "owner"] },
       { name: "Laporan Shift", href: "/reports/shifts", roles: ["manager", "owner"] },
       { name: "Laporan Meja", href: "/reports/tables", roles: ["manager", "owner"] },
@@ -86,9 +86,9 @@ export const navigation: NavGroup[] = [
   {
     title: "Keuangan",
     Icon: WalletIcon,
-    roles: ["owner"],
+    roles: ["manager", "owner"],
     items: [
-      { name: "Biaya Operasional", href: "/expenses", roles: ["owner"] },
+      { name: "Biaya Operasional", href: "/expenses", roles: ["manager", "owner"] },
     ],
   },
   {
