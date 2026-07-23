@@ -6,13 +6,13 @@ export function CTA() {
     <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950 text-white relative overflow-hidden">
       {/* Ambient Glow Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-r from-cabe-950/80 via-slate-950 to-orange-950/60 pointer-events-none"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-cabe-600/20 rounded-full blur-[140px] pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-cabe-600/20 rounded-full blur-[140px] pointer-events-none"></div>
 
-      <div className="relative max-w-4xl mx-auto text-center border border-slate-800/90 rounded-3xl p-8 sm:p-14 bg-slate-900/60 backdrop-blur-2xl shadow-2xl">
+      <div className="relative max-w-5xl mx-auto text-center border border-slate-800/90 rounded-3xl p-8 sm:p-14 bg-slate-900/60 backdrop-blur-2xl shadow-2xl">
         <span className="text-xs font-mono uppercase tracking-widest text-cabe-400 bg-cabe-500/10 px-3 py-1 rounded-full border border-cabe-500/20">
           Digitalisasi Restoran Anda Hari Ini
         </span>
-        <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+        <h2 className="mt-4 text-xl sm:text-3xl md:text-4xl lg:text-[2.5rem] font-extrabold text-white tracking-tight leading-tight whitespace-normal md:whitespace-nowrap">
           Siap Tingkatkan Omset & Efisiensi Restoran Anda?
         </h2>
         <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
