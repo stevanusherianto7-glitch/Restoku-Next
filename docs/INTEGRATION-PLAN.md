@@ -97,13 +97,17 @@
 
 ## 2. Data Communication Standards
 
+> ⚠️ **STATUS 2026-07-24 — PERINGATAN STALENESS.** Bagian ini (dan contoh endpoint `/api/v1/orders/*`, `/api/v1/menus/*` di bawah) mendokumentasikan kontrak API **yang belum diimplementasikan**. Di repo saat ini, `routes/api.php` mereferensi `App\Http\Controllers\Api\V1\OrderController` yang **tidak ada di disk** — route order/menu/payment/public **dikomentari (TODO)**. Endpoint yang benar-benar aktif hanya: `/api/health`, `/api/v1/auth/*` (login/logout/me/refresh), `/api/v1/orders/void`, `/api/v1/webhooks/payment`. Lihat **API-DOCUMENTATION.md** (sudah direvisi) untuk daftar route aktif vs TODO. Jangan jadikan contoh `/orders`/`/menus` di sini sebagai kontrak final.
+
 ### API Base URL
 
 ```
 Production:  https://api.restoku.id/v1
 Staging:     https://staging-api.restoku.id/v1
-Development: http://localhost:8000/api/v1
+Development: http://localhost:8000/api/v1   (HANYA jika VITE_USE_MOCKS=false & backend sudah diimplementasikan)
 ```
+
+> **Frontend data mode:** Saat `VITE_USE_MOCKS=true` (default dev), SPA tidak memanggil URL di atas — seluruh data diserve oleh **MSW (Mock Service Worker)**. URL base di atas hanya relevan saat mock dimatikan.
 
 ### Request/Response Format
 
@@ -349,6 +353,8 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 import axios from "axios";
 
 const apiClient = axios.create({
+  // Saat VITE_USE_MOCKS=true (default), MSW mencegat fetch — baseURL ini tidak terpanggil.
+  // Saat VITE_USE_MOCKS=false, arahkan ke API nyata (VITE_API_URL wajib diset).
   baseURL: import.meta.env.VITE_API_URL,
   headers: { "Content-Type": "application/json" },
 });
@@ -921,6 +927,8 @@ Import `docs/postman/restoku-collection.json` for complete API testing.
 
 ```env
 # .env.testing
+# Default: MSW mock aktif (VITE_USE_MOCKS=true) -> VITE_API_URL tidak dipakai.
+# Untuk integration test ke API nyata, set VITE_USE_MOCKS=false lalu isi:
 VITE_API_URL=http://localhost:8000/api/v1
 VITE_REVERB_APP_KEY=local-key
 VITE_WS_HOST=localhost

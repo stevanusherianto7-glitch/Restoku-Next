@@ -43,12 +43,12 @@ Restoku dibangun dengan modern web stack untuk performa, developer experience, d
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| **Laravel** | 13.x | PHP framework |
-| **PHP** | 8.2.x | Runtime |
+| **Laravel** | 13.x (terpasang 13.19.0) | PHP framework |
+| **PHP** | 8.2.x+ (terpasang 8.5.8) | Runtime |
 | **PostgreSQL** | 15.x | Primary database |
 | **Redis** | 7.x | Cache, queue, sessions |
-| **Sanctum** | — | API authentication (JWT) |
-| **Reverb** | — | WebSocket (real-time) |
+| **Sanctum** | — | API authentication (Bearer token) |
+| **Reverb** | — | WebSocket (real-time) — *belum di-wire ke frontend* |
 
 ### Backend Packages
 
@@ -103,12 +103,15 @@ Restoku dibangun dengan modern web stack untuk performa, developer experience, d
 
 | Variable | Development | Staging | Production |
 |----------|-------------|---------|------------|
-| `VITE_API_URL` | `http://localhost:8000/api/v1` | `https://staging-api.restoku.id/api/v1` | `https://api.restoku.id/api/v1` |
+| `VITE_USE_MOCKS` | `true` (MSW mock — tidak butuh backend jalan) | `false` | `false` |
+| `VITE_CLOUDINARY_CLOUD_NAME` | `dwdaydzsh` | `dwdaydzsh` | `dwdaydzsh` |
 | `APP_ENV` | `local` | `staging` | `production` |
 | `APP_DEBUG` | `true` | `false` | `false` |
 | `DB_CONNECTION` | `pgsql` | `pgsql` | `pgsql` |
 | `SESSION_DRIVER` | `redis` | `redis` | `redis` |
 | `QUEUE_CONNECTION` | `redis` | `redis` | `redis` |
+
+> **Catatan:** Frontend saat ini berjalan penuh dengan **MSW (Mock Service Worker)** saat `VITE_USE_MOCKS=true` — seluruh data (menu, order, dashboard) berasal dari mock, bukan dari Laravel API. Artinya `npm run dev` + Playwright e2e bisa jalan **tanpa backend**. Untuk menghubungkan ke API nyata, set `VITE_USE_MOCKS=false` DAN pastikan backend (`/api/v1/*`) sudah diimplementasikan (lihat API-DOCUMENTATION.md — sebagian besar endpoint order/menu belum ada).
 
 ---
 

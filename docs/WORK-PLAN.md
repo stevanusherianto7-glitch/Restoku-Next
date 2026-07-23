@@ -154,6 +154,12 @@ Rencana kerja pembangunan Restoku MVP (Phase 1) dengan 8 fitur utama.
 
 ---
 
+## Status Backend (2026-07-24)
+
+> **Catatan arsitek:** Beberapa task backend di atas masih `⬜` karena controller API inti **belum diimplementasikan**. `routes/api.php` saat ini mereferensi `App\Http\Controllers\Api\V1\OrderController` yang **tidak ada di disk** — route order/payment/public dikomentari (TODO) sampai controller tersebut ditulis. Yang **sudah ada**: `Auth\AuthController` (login/me/logout/refresh), `Api\V1\VoidOrderController`, `Api\V1\PaymentWebhookController`. `php artisan route:list` hanya menampilkan 10 route (4 hidup). Frontend SPA berjalan penuh via MSW mock tanpa backend. Lihat `API-DOCUMENTATION.md` untuk detail endpoint aktif vs TODO.
+
+---
+
 ## Risks
 
 | Risk | Probability | Impact | Mitigation |

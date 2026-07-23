@@ -53,14 +53,20 @@ SANCTUM_STATEFUL_DOMAINS=staging.restoku.id
 SESSION_DRIVER=redis
 QUEUE_CONNECTION=redis
 
-# Frontend
-cp frontend/.env.example frontend/.env
+# Frontend (folder: Restoku-Next/ — ini adalah SPA, BUKAN folder "frontend/")
+cp Restoku-Next/.env.example Restoku-Next/.env
 
-# Edit frontend/.env
-VITE_API_URL=https://staging-api.restoku.id/api/v1
-VITE_WS_HOST=staging-ws.restoku.id
-VITE_WS_PORT=443
+# Edit Restoku-Next/.env
+# Mode mock (MSW) — tidak butuh backend saat dev/test:
+VITE_USE_MOCKS=true
+VITE_CLOUDINARY_CLOUD_NAME=dwdaydzsh
+# Untuk hook ke API nyata (pastikan backend /api/v1/* sudah diimplementasikan):
+# VITE_USE_MOCKS=false
 ```
+
+> **Struktur repo:** Monorepo `Restoku-Next/` berisi SPA (`Restoku-Next/`) + backend Laravel nested (`Restoku-Next/backend/`). Docker build context untuk frontend = `./Restoku-Next`, backend = `./Restoku-Next/backend`. Tidak ada folder `frontend/` terpisah.
+>
+> **Backend route:** `bootstrap/app.php` hanya memuat `routes/api.php` (API-only, tidak ada `routes/web.php`). Jalankan `php artisan route:list` untuk verifikasi route yang aktif.
 
 ---
 
@@ -96,10 +102,11 @@ services:
   # Frontend
   frontend:
     build:
-      context: ./frontend
+      context: ./Restoku-Next
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=https://staging-api.restoku.id/api/v1
+        - VITE_USE_MOCKS=false
+        - VITE_CLOUDINARY_CLOUD_NAME=dwdaydzsh
     container_name: restoku-frontend
     restart: unless-stopped
     ports:
@@ -182,12 +189,12 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 ```bash
 cd /var/www
-git clone https://github.com/your-org/restoku.git
-cd restoku
+git clone https://github.com/stevanusherianto7-glitch/Restoku-Next.git
+cd Restoku-Next
 
 # Copy environment files
 cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
+cp Restoku-Next/.env.example Restoku-Next/.env
 
 # Generate app key
 docker-compose run api php artisan key:generate
@@ -269,18 +276,17 @@ stopwaitsecs=3600
 ## Post-Deployment Verification
 
 ### Health Check
-
+### Health Check
 ```bash
-curl https://staging-api.restoku.id/api/v1/health
+curl https://staging-api.restoku.id/api/health
 ```
 
 Expected:
 ```json
-{
-  "status": "ok",
-  "version": "1.0.0"
-}
+{ "status": "ok", "timestamp": "2026-..." }
 ```
+
+> Route kesehatan adalah `/api/health` (bukan `/api/v1/health`). Jalankan `php artisan route:list` di server untuk daftar route aktif.
 
 ### Test Login
 

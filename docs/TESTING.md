@@ -6,22 +6,22 @@ Dokumen ini berisi panduan lengkap pengujian (Unit Test & End-to-End Test) untuk
 
 ## 📊 Summary Coverage & Metrik Utama
 
-- **Total Test Files**: `36` Unit Test Files + `6` E2E Spec Files
-- **Total Test Cases**: `328` Unit Tests (100% Pass)
+> **Diukur ulang 2026-07-24** via `npm run test:coverage` (v8) pada working tree saat ini. Angka sebelumnya (328 tests / 91.45% stmts / 94.93% funcs) **TIDAK AKURAT** — berikut nilai riil:
+
+- **Total Test Files**: `39` Unit Test Files + `9` E2E Spec Files
+- **Total Test Cases**: `339` Unit Tests (100% Pass) — `npm run test:unit` → 339 passed / 39 files
 - **Framework Unit Test**: [Vitest](https://vitest.dev/) + [@testing-library/react](https://testing-library.com/)
 - **Framework E2E**: [Playwright](https://playwright.dev/)
 - **Coverage Engine**: `@vitest/coverage-v8`
 
-> Nilai coverage di bawah diukur dari `npm run test:coverage` (v8). Angka
-> diperbarui pasca-remediasi audit (penghapusan file duplikat/0% & penambahan
-> test `errorHandler`/`apiClient`).
-
-| Metrik | Hasil Coverage | Threshold Target | Status |
+| Metrik | Hasil Coverage (riil) | Threshold Target (vitest.config.ts) | Status |
 |---|:---:|:---:|:---:|
-| **Statements** | **91.45%** | 85% | ✅ Passed |
-| **Branches** | **90.81%** | 85% | ✅ Passed |
-| **Functions** | **94.93%** | 90% | ✅ Passed |
-| **Lines** | **91.45%** | 85% | ✅ Passed |
+| **Statements** | **87.25%** | 85% | ✅ Passed |
+| **Branches** | **90.43%** | 85% | ✅ Passed |
+| **Functions** | **87.5%** | 90% | ⚠️ **Di bawah threshold** (CI belum meng-enforce — jalankan `test:coverage`, bukan `test:unit`) |
+| **Lines** | **87.25%** | 85% | ✅ Passed |
+
+> ⚠️ **Catatan:** `npm run test:unit` (yang dijalankan CI `ci-cd.yml`) = `vitest run` **tanpa coverage**, jadi threshold fungsi 90% yang gagal di lokal **tidak di-enforce di CI**. Untuk menaikkan fungsi coverage, target file lemah: `cloudinary.ts` (54% funcs), `Order.ts` (57%), `usePosCartStore.ts` (57%), `lazyLoad.tsx` (75%).
 
 ---
 
@@ -71,21 +71,31 @@ Restoku-Next/
 ├── TESTING.md                        # Dokumentasi testing ini
 ├── vitest.config.ts                  # Konfigurasi utama Vitest & Coverage
 ├── playwright.config.ts              # Konfigurasi E2E Playwright
-├── e2e/                              # File Pengujian End-to-End (Playwright)
+├── e2e/                              # File Pengujian End-to-End (Playwright) — 9 spec
 │   ├── auth.spec.ts                  # Test E2E Auth, Login, Logout, Guard
-│   ├── pos.spec.ts                   # Test E2E Kasir / POS & Cart
+│   ├── customer-menu.spec.ts         # Test E2E Buku Menu Digital (publik)
 │   ├── dashboard.spec.ts             # Test E2E Dashboard & Navigasi Sidebar
-│   └── reports-tables.spec.ts        # Test E2E Laporan & Manajemen Meja
+│   ├── kitchen.spec.ts               # Test E2E Dapur (KDS)
+│   ├── landing.spec.ts               # Test E2E Landing page
+│   ├── menu.spec.ts                  # Test E2E Manajemen Menu
+│   ├── pos.spec.ts                   # Test E2E Kasir / POS & Cart
+│   ├── reports-tables.spec.ts        # Test E2E Laporan & Manajemen Meja
+│   └── waiter.spec.ts                # Test E2E Waiter & Bar Display
 └── src/
     ├── test/
     │   └── setup.ts                  # Global test setup (localStorage, env, mocks)
     ├── shared/                       # Shared Domain & Utilities Tests
     │   ├── domain/
     │   │   ├── types.test.ts         # Test Branded Types (Money, UserId, RestaurantId)
-    │   │   └── validations.test.ts   # Test Zod Schemas (login, menu, order, table)
+    │   │   └── validations.test.ts  # Test Zod Schemas (login, menu, order, table)
     │   ├── infrastructure/
     │   │   ├── accessibility/
     │   │   │   └── hooks.test.ts     # Test A11y Hooks (Focus Trap, Keyboard Nav, Aria Live)
+    │   │   ├── http/
+    │   │   │   ├── apiClient.test.ts # Test Axios client (401 refresh, redirect)
+    │   │   │   └── errorHandler.test.ts # Test error normalization
+    │   │   ├── media/
+    │   │   │   └── cloudinary.test.ts # Test Cloudinary URL builder + fallback
     │   │   └── performance/
     │   │       └── lazyLoad.test.ts  # Test Lazy Load & Prefetch Utilities
     │   └── ui/

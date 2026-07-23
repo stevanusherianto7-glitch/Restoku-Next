@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 import path from "path";
 
 export default tseslint.config(
-  { ignores: ["dist", "coverage", "public/mockServiceWorker.js"] },
+  { ignores: ["dist", "coverage", "public/mockServiceWorker.js", "vendor", "backend/vendor", "node_modules"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

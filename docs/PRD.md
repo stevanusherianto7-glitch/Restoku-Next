@@ -115,10 +115,11 @@ Sebagai **kasir**, saya ingin **login ke sistem** sehingga **saya dapat mengakse
 Sebagai **pemilik**, saya ingin **mengatur hak akses staf** sehingga **mereka hanya bisa mengakses fitur yang sesuai**.
 
 **Acceptance Criteria:**
-- [ ] 4 role: Owner, Manager, Cashier, Kitchen
+- [ ] 5 role: Owner, Manager, Cashier, Kitchen, **Waiter** (sesuai `navigation.ts` & `Role` type di frontend)
 - [ ] Owner bisa akses semua fitur
 - [ ] Cashier hanya bisa akses POS dan laporan
-- [ │ Kitchen hanya bisa akses daftar pesanan
+- [ ] Kitchen hanya bisa akses daftar pesanan
+- [ ] **Waiter** bisa akses pelayanan meja & bar display
 
 ---
 
@@ -373,12 +374,13 @@ Sebagai **pemilik**, saya ingin **menampilkan promo** sehingga **tamu tertarik m
 ### Architecture
 
 - **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS
-- **Backend:** Laravel 13 + PHP 8.2+ (Hexagonal Architecture)
+- **Backend:** Laravel 13 (13.19) + PHP 8.2+ (Hexagonal Architecture)
 - **Database:** PostgreSQL 15
 - **Cache:** Redis
-- **Queue:** Laravel Queue (Redis/SQS)
-- **Real-time:** Laravel Reverb (WebSocket)
-- **Deployment:** Docker + AWS/GCP
+- **Queue:** Laravel Queue (Redis)
+- **Real-time:** Laravel Reverb (WebSocket) — *belum di-wire ke frontend*
+- **Frontend data mode:** MSW (Mock Service Worker) saat `VITE_USE_MOCKS=true` — SPA bisa jalan penuh tanpa backend
+- **Deployment:** Docker + VPS (lihat DEPLOYMENT-STAGING.md)
 
 ### Performance Requirements
 

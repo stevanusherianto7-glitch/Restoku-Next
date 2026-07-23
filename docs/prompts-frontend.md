@@ -189,7 +189,7 @@ Rules:
 - Implement port interface dari application layer
 - Handle error dengan jelas
 - Gunakan fetch/axios
-- Environment variable untuk base URL (import.meta.env.VITE_API_URL)
+- Environment variable untuk base URL: saat `VITE_USE_MOCKS=true` (default) data diserve MSW mock (tidak perlu base URL); untuk hook ke API nyata set `VITE_USE_MOCKS=false` dan gunakan `import.meta.env.VITE_API_URL` (jika didefinisikan).
 ```
 
 ---
