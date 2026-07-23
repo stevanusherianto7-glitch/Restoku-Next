@@ -22,20 +22,21 @@ test.describe("Authentication", () => {
     await page.getByLabel(/email/i).fill("admin@restoku.com");
     await page.getByLabel(/password/i).fill("password");
     await page.getByRole("button", { name: /masuk/i }).click();
+    await page.waitForURL("/dashboard");
     await expect(page).toHaveURL("/dashboard");
   });
 
   test("should logout successfully", async ({ page }) => {
-    // Login first
     await page.goto("/login");
     await page.waitForLoadState("domcontentloaded");
     await page.getByLabel(/email/i).fill("admin@restoku.com");
     await page.getByLabel(/password/i).fill("password");
     await page.getByRole("button", { name: /masuk/i }).click();
-    await expect(page).toHaveURL("/dashboard");
+    await page.waitForURL("/dashboard");
 
     // Logout via profile title
     await page.getByTitle(/logout/i).first().click();
+    await page.waitForURL("/login");
     await expect(page).toHaveURL("/login");
   });
 

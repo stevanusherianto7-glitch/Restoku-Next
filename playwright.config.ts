@@ -40,7 +40,7 @@ export default defineConfig({
   webServer: {
     command: "npm run dev",
     url: "http://localhost:3000",
-    reuseExistingServer: false,
+    reuseExistingServer: true,
     env: {
       VITE_USE_MOCKS: "true",
     },
