@@ -19,20 +19,26 @@ test.describe("POS (Point of Sale)", () => {
   });
 
   test("should display menu items", async ({ page }) => {
-    await expect(page.getByText(/nasi goreng/i).first()).toBeVisible();
+    const item = page.getByText(/nasi goreng/i).first();
+    await item.scrollIntoViewIfNeeded();
+    await expect(item).toBeVisible();
   });
 
   test("should filter by category", async ({ page }) => {
     const makananBtn = page.getByRole("button", { name: /makanan/i }).first();
     if (await makananBtn.isVisible()) {
       await makananBtn.click();
-      await expect(page.getByText(/nasi goreng/i).first()).toBeVisible();
+      const item = page.getByText(/nasi goreng/i).first();
+      await item.scrollIntoViewIfNeeded();
+      await expect(item).toBeVisible();
     }
   });
 
   test("should search menu items", async ({ page }) => {
     await page.getByPlaceholder(/cari/i).fill("nasi");
-    await expect(page.getByText(/nasi goreng/i).first()).toBeVisible();
+    const item = page.getByText(/nasi goreng/i).first();
+    await item.scrollIntoViewIfNeeded();
+    await expect(item).toBeVisible();
   });
 
   test("should add item to cart", async ({ page }) => {
