@@ -1,15 +1,23 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SplitBillModal } from "./SplitBillModal";
+import type { PosCartItem } from "@features/pos/ui/stores/usePosCartStore";
+import { createMenuId, createCategoryId } from "@features/menu/domain/entities/MenuItem";
 
-const MOCK_ITEMS = [
+const MOCK_ITEMS: PosCartItem[] = [
   {
     menu: {
-      id: "menu-1",
+      id: createMenuId("menu-1"),
       name: "Bakmi Godog Jawa",
+      description: null,
       price: 28000,
-      category: "Makanan",
-      status: "active" as const,
+      category_id: createCategoryId("cat-makanan"),
+      category: "makanan",
+      image_url: null,
+      status: "active",
+      is_popular: false,
+      is_new: false,
+      is_promo: false,
       created_at: "",
       updated_at: "",
     },
@@ -23,7 +31,7 @@ describe("SplitBillModal", () => {
       <SplitBillModal
         isOpen={true}
         onClose={vi.fn()}
-        items={MOCK_ITEMS as any}
+        items={MOCK_ITEMS}
         totalWithTax={30800}
         onConfirmSplitPayment={vi.fn()}
       />
@@ -38,7 +46,7 @@ describe("SplitBillModal", () => {
       <SplitBillModal
         isOpen={true}
         onClose={vi.fn()}
-        items={MOCK_ITEMS as any}
+        items={MOCK_ITEMS}
         totalWithTax={32200}
         onConfirmSplitPayment={vi.fn()}
       />
@@ -54,7 +62,7 @@ describe("SplitBillModal", () => {
       <SplitBillModal
         isOpen={true}
         onClose={vi.fn()}
-        items={MOCK_ITEMS as any}
+        items={MOCK_ITEMS}
         totalWithTax={32200}
         onConfirmSplitPayment={onConfirmSplitPayment}
       />
