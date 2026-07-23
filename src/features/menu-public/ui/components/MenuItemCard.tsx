@@ -1,5 +1,6 @@
 import type { MenuItem } from "@features/menu/domain/entities/MenuItem";
 import { formatPrice, getMenuBadges, isAvailable } from "@features/menu/domain/entities/MenuItem";
+import { getCloudinaryUrl, MENU_IMAGE_FALLBACK } from "@shared/infrastructure/media/cloudinary";
 
 interface MenuItemCardProps {
   menu: MenuItem;
@@ -30,7 +31,10 @@ export function MenuItemCard({ menu, onAddToCart }: MenuItemCardProps) {
       <div className="mb-3 aspect-square overflow-hidden rounded-lg bg-gray-100">
         {menu.image_url ? (
           <img
-            src={menu.image_url}
+            src={getCloudinaryUrl(menu.image_url, { width: 400, height: 400, crop: "fill" })}
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = MENU_IMAGE_FALLBACK;
+            }}
             alt={menu.name}
             className="h-full w-full object-cover"
           />

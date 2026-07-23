@@ -1,6 +1,7 @@
 import { useCartStore } from "@features/menu-public/ui/stores/useCartStore";
 import { formatPrice } from "@features/menu/domain/entities/MenuItem";
 import { Button } from "@shared/ui/atoms/Button";
+import { getCloudinaryUrl, MENU_IMAGE_FALLBACK } from "@shared/infrastructure/media/cloudinary";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -54,7 +55,10 @@ export function CartDrawer({ isOpen, onClose, onCheckout }: CartDrawerProps) {
                   <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
                     {item.menu.image_url ? (
                       <img
-                        src={item.menu.image_url}
+                        src={getCloudinaryUrl(item.menu.image_url, { width: 128, height: 128, crop: "fill" })}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = MENU_IMAGE_FALLBACK;
+                        }}
                         alt={item.menu.name}
                         className="h-full w-full object-cover"
                       />
