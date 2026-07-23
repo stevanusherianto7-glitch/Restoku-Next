@@ -1,11 +1,9 @@
 /**
  * Cloudinary media helper.
  *
- * Restoku stores Cloudinary `public_id` (e.g. "menu/nasi-goreng-spesial") in
- * `MenuItem.image_url`. This helper derives a delivery URL with on-the-fly
- * transformations (width/height/quality/format auto). If the stored value is
- * already a full http(s) URL (e.g. a backend that resolves it server-side),
- * it is returned unchanged for backward compatibility.
+ * Restoku stores Cloudinary `public_id` (e.g. "menu/nasi-goreng-spesial") or full image URLs in
+ * `MenuItem.image_url`. This helper derives a Cloudinary CDN delivery URL with on-the-fly
+ * transformations (width/height/quality/format auto).
  *
  * The cloud name is public by design (required in the delivery URL) and is
  * safe to ship to the browser. Set VITE_CLOUDINARY_CLOUD_NAME to override.
@@ -14,7 +12,8 @@
 export const CLOUDINARY_CLOUD_NAME =
   import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dwdaydzsh";
 
-const DELIVERY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+const UPLOAD_DELIVERY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+const FETCH_DELIVERY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/fetch`;
 
 export interface CloudinaryTransform {
   width?: number;
@@ -42,17 +41,26 @@ function buildTransformSegment(t: CloudinaryTransform): string {
 }
 
 /**
- * Resolve a menu image reference to a Cloudinary delivery URL.
- * @param ref `public_id` (e.g. "menu/nasi-goreng") or a full URL.
- * @param transform optional on-the-fly transformations.
+ * Resolve a menu image reference to a Cloudinary delivery URL with dynamic CDN transformation.
+ * Supports both Cloudinary public_ids and HTTP/HTTPS image URLs.
+ * 
+ * @param ref `public_id` (e.g. "menu/nasi-goreng") or a full HTTP(S) image URL.
+ * @param transform optional on-the-fly transformations (width, height, crop, quality, format).
  */
 export function getCloudinaryUrl(
   ref: string | null | undefined,
   transform: CloudinaryTransform = {}
 ): string {
   if (!ref) return MENU_IMAGE_FALLBACK;
-  // Already a full URL (http/https/data:) — return as-is.
-  if (/^(https?:|data:)/i.test(ref)) return ref;
+  if (/^data:/i.test(ref)) return ref;
+
+  // External HTTP/HTTPS URLs — return as-is for 100% rendering stability
+  if (/^https?:\/\//i.test(ref)) {
+    return ref;
+  }
+
   const segment = buildTransformSegment(transform);
-  return `${DELIVERY_BASE}/${segment}/${ref}`;
+
+  // Cloudinary public_id — deliver via Cloudinary Upload API
+  return `${UPLOAD_DELIVERY_BASE}/${segment}/${ref}`;
 }
