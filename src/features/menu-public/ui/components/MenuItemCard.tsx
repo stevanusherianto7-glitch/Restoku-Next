@@ -11,75 +11,89 @@ export function MenuItemCard({ menu, onAddToCart }: MenuItemCardProps) {
   const badges = getMenuBadges(menu);
   const available = isAvailable(menu);
 
-  return (
-    <div className={`relative rounded-xl border bg-white p-4 shadow-sm ${!available ? "opacity-60" : ""}`}>
-      {/* Badges */}
-      {badges.length > 0 && (
-        <div className="absolute -top-2 left-4 flex gap-1">
-          {badges.map((badge) => (
-            <span
-              key={badge}
-              className="rounded-full bg-cabe-100 px-2 py-0.5 text-xs font-medium text-cabe-700"
-            >
-              {badge}
-            </span>
-          ))}
-        </div>
-      )}
+  // Pick badge label priority: Favorit, Best Seller, Spesial
+  const primaryBadge = menu.is_popular
+    ? "Favorit"
+    : menu.is_promo
+    ? "Best Seller"
+    : menu.is_new
+    ? "Spesial"
+    : badges[0];
 
-      {/* Image */}
-      <div className="mb-3 aspect-square overflow-hidden rounded-lg bg-gray-100">
-        {menu.image_url ? (
-          <img
-            src={getCloudinaryUrl(menu.image_url, { width: 400, height: 400, crop: "fill" })}
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = MENU_IMAGE_FALLBACK;
-            }}
-            alt={menu.name}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-gray-400">
-            <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-        )}
+  return (
+    <div
+      className={`relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-3.5 shadow-sm border border-amber-100/90 transition-all hover:shadow-md ${
+        !available ? "opacity-60" : ""
+      }`}
+    >
+      <div>
+        {/* Image & Badge Overlay */}
+        <div className="relative mb-3 aspect-[4/3] w-full overflow-hidden rounded-2xl bg-amber-50">
+          {primaryBadge && (
+            <div className="absolute top-2 left-2 z-10">
+              <span className="rounded-full bg-amber-500 px-3 py-0.5 text-[10px] font-black text-white shadow-xs">
+                {primaryBadge}
+              </span>
+            </div>
+          )}
+
+          {menu.image_url ? (
+            <img
+              src={getCloudinaryUrl(menu.image_url, { width: 500, height: 400, crop: "fill" })}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = MENU_IMAGE_FALLBACK;
+              }}
+              alt={menu.name}
+              className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-amber-300">
+              <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          )}
+        </div>
+
+        {/* Title & Description */}
+        <div className="space-y-1">
+          <h3 className="text-xs font-black text-slate-900 line-clamp-1">{menu.name}</h3>
+
+          {menu.description && (
+            <p className="line-clamp-2 text-[11px] text-slate-500 font-medium leading-tight">
+              {menu.description}
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="space-y-2">
-        <h3 className="font-semibold text-gray-900">{menu.name}</h3>
-
-        {menu.description && (
-          <p className="line-clamp-2 text-sm text-gray-500">{menu.description}</p>
-        )}
-
-        <div className="flex items-center justify-between">
-          <span className="text-lg font-bold text-cabe-600">
+      {/* Price, Status & Add Button */}
+      <div className="mt-3 pt-2 border-t border-amber-50">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-black text-amber-800">
             {formatPrice(menu.price)}
           </span>
           <span
-            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+            className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold ${
               available
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-rose-100 text-rose-800"
             }`}
           >
             {available ? "Tersedia" : "Habis"}
           </span>
         </div>
-      </div>
 
-      {/* Add to Cart Button */}
-      {available && (
-        <button
-          onClick={() => onAddToCart(menu)}
-          className="mt-4 w-full rounded-lg bg-cabe-600 px-4 py-2 text-sm font-medium text-white hover:bg-cabe-700"
-        >
-          + Tambah
-        </button>
-      )}
+        {available && (
+          <button
+            type="button"
+            onClick={() => onAddToCart(menu)}
+            className="w-full rounded-2xl bg-amber-600 py-2 text-xs font-black text-white shadow-sm hover:bg-amber-700 transition-all"
+          >
+            + Tambah
+          </button>
+        )}
+      </div>
     </div>
   );
 }
