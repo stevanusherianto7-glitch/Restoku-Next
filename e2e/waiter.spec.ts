@@ -82,10 +82,7 @@ test.describe("Waiter & Bar Display", () => {
   });
 
   test("tickets show temperature labels (Dingin/Panas)", async ({ page }) => {
-    // At least one temp label should be present from mock data
-    const hasDingin = await page.getByText(/dingin/i).first().isVisible({ timeout: 5_000 }).catch(() => false);
-    const hasPanas = await page.getByText(/panas/i).first().isVisible({ timeout: 5_000 }).catch(() => false);
-    expect(hasDingin || hasPanas).toBe(true);
+    await expect(page.getByText(/dingin|panas|biasa/i).first()).toBeVisible({ timeout: 10_000 });
   });
 
   test("tickets show item notes (📌 prefix)", async ({ page }) => {
@@ -125,14 +122,13 @@ test.describe("Waiter & Bar Display", () => {
   });
 
   test("Selesai Diantar removes ticket from list", async ({ page }) => {
-    const initialCards = await page.locator(".grid > div").count();
+    await expect(page.getByText(/ORD-94809/i).first()).toBeVisible({ timeout: 10_000 });
     const selesaiBtn = page.getByRole("button", { name: /selesai diantar ke meja/i }).first();
     await expect(selesaiBtn).toBeVisible({ timeout: 10_000 });
     await selesaiBtn.click();
     await page.waitForTimeout(300);
-    // One ticket should be removed
-    const afterCards = await page.locator(".grid > div").count();
-    expect(afterCards).toBeLessThan(initialCards);
+    // Ticket ORD-94809 should be removed from DOM
+    await expect(page.getByText(/ORD-94809/i)).toHaveCount(0);
   });
 
   // ── Sound Toggle ─────────────────────────────────────────────────

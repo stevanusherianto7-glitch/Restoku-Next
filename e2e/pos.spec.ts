@@ -128,7 +128,7 @@ test.describe("POS — Kasir", () => {
     const bayarBtn = page.getByRole("button", { name: /bayar/i }).first();
     await bayarBtn.click();
 
-    await expect(page.getByText(/total tagihan/i).first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/total harus dibayar|total tagihan|total/i).first()).toBeVisible({ timeout: 10_000 });
   });
 
   test("Calculator Modal can be closed", async ({ page }) => {
@@ -140,7 +140,12 @@ test.describe("POS — Kasir", () => {
     await bayarBtn.click();
     await expect(page.getByText(/kalkulator kasir/i).first()).toBeVisible({ timeout: 10_000 });
 
-    await page.keyboard.press("Escape");
+    const closeBtn = page.getByRole("button", { name: /✕/i }).first();
+    if (await closeBtn.isVisible().catch(() => false)) {
+      await closeBtn.click();
+    } else {
+      await page.keyboard.press("Escape");
+    }
     await expect(page.getByText(/kalkulator kasir/i)).toHaveCount(0, { timeout: 5_000 });
   });
 

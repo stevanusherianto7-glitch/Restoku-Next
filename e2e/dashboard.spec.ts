@@ -56,13 +56,12 @@ test.describe("Dashboard — Owner", () => {
 
   test("navigates to /menu from Produk & Menu link", async ({ page }) => {
     const manLink = page.getByRole("link", { name: /produk & menu/i }).first();
-    if (!(await manLink.isVisible().catch(() => false))) {
-      const manGroup = page.getByText("Manajemen").first();
-      if (await manGroup.isVisible().catch(() => false)) {
-        await manGroup.click();
-      }
+    const isVisible = await manLink.isVisible().catch(() => false);
+    if (!isVisible) {
+      await page.getByRole("button", { name: /manajemen/i }).first().click();
+      await page.waitForTimeout(300);
     }
-    await manLink.click();
+    await page.getByRole("link", { name: /produk & menu/i }).first().click();
     await page.waitForURL("**/menu", { timeout: 10_000 });
     await expect(page).toHaveURL(/\/menu/);
   });
