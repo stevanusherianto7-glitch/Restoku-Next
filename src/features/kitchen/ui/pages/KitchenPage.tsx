@@ -96,7 +96,7 @@ export function KitchenPage() {
   const readyCount = tickets.filter((t) => t.status === "ready").length;
 
   return (
-    <AdminLayout title="Monitor Dapur & Kitchen Display System (KDS)">
+    <AdminLayout title="Monitor Kitchen Display System (KDS)">
       {/* Top Banner Header */}
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-slate-900 text-white p-5 shadow-lg border border-slate-800">
         <div className="flex items-center gap-4">
@@ -105,7 +105,7 @@ export function KitchenPage() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-black text-white">Layar Display Tim Dapur (KDS)</h2>
+              <h2 className="text-lg font-black text-white">Layar Display Tim Kitchen (KDS)</h2>
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-black text-emerald-400 border border-emerald-500/30">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live Order Stream
               </span>
