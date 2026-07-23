@@ -7,6 +7,8 @@ import { MenuItemCard } from "@features/menu-public/ui/components/MenuItemCard";
 import { CartDrawer } from "@features/menu-public/ui/components/CartDrawer";
 import { OrderConfirmationModal } from "@features/menu-public/ui/components/OrderConfirmationModal";
 import { WelcomeModal } from "@features/menu-public/ui/components/WelcomeModal";
+import { DineInVerificationModal } from "@features/menu-public/ui/components/DineInVerificationModal";
+import { OrderStatusModal } from "@features/menu-public/ui/components/OrderStatusModal";
 import { GalleryTab } from "@features/menu-public/ui/components/GalleryTab";
 import { ReservationTab } from "@features/menu-public/ui/components/ReservationTab";
 import { useCartStore } from "@features/menu-public/ui/stores/useCartStore";
@@ -38,6 +40,8 @@ export function MenuPublicPage() {
   const [activeTab, setActiveTab] = useState<"menu" | "gallery" | "reservation">("menu");
   const [orderType, setOrderType] = useState<"dine-in" | "take-away">("dine-in");
   const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [showDineInVerification, setShowDineInVerification] = useState(false);
+  const [showOrderStatusModal, setShowOrderStatusModal] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>("makanan");
@@ -96,6 +100,13 @@ export function MenuPublicPage() {
     setIsOrderModalOpen(true);
   };
 
+  const handleOrderTypeChange = (type: "dine-in" | "take-away") => {
+    setOrderType(type);
+    if (type === "dine-in") {
+      setShowDineInVerification(true);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#fcf9f2]">
@@ -134,7 +145,24 @@ export function MenuPublicPage() {
         tableName={tableName}
         restaurantName={restaurant.name}
         orderType={orderType}
-        onOrderTypeChange={setOrderType}
+        onOrderTypeChange={handleOrderTypeChange}
+      />
+
+      {/* Dine In GPS & PIN Verification Modal */}
+      <DineInVerificationModal
+        isOpen={showDineInVerification}
+        onClose={() => setShowDineInVerification(false)}
+        onVerified={() => {
+          setShowDineInVerification(false);
+        }}
+      />
+
+      {/* Live Order Tracker Modal */}
+      <OrderStatusModal
+        isOpen={showOrderStatusModal}
+        onClose={() => setShowOrderStatusModal(false)}
+        tableName={tableName}
+        restaurantName={restaurant.name}
       />
 
       {/* Top Offline Warning Banner */}
@@ -164,22 +192,20 @@ export function MenuPublicPage() {
             </div>
           </div>
 
-          {/* Halal Logo & Orders Pill */}
+          {/* Halal Logo & Orders Tracker Pill Button */}
           <div className="flex items-center gap-2">
             <div className="hidden sm:flex flex-col items-center justify-center rounded-xl bg-emerald-50 px-2.5 py-1 border border-emerald-200 text-emerald-800 text-[9px] font-black leading-tight">
               <span>HALAL</span>
               <span className="text-[7px] text-emerald-600">INDONESIA</span>
             </div>
 
-            {getItemCount() > 0 && (
-              <button
-                type="button"
-                onClick={() => setIsCartOpen(true)}
-                className="flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-black text-amber-900 border border-amber-200/80 shadow-2xs hover:bg-amber-200 transition-all"
-              >
-                <span>⏱️</span> {getItemCount()} Pesanan
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowOrderStatusModal(true)}
+              className="flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-black text-amber-900 border border-amber-200/80 shadow-2xs hover:bg-amber-200 transition-all"
+            >
+              <span>⏱️</span> 2 Pesanan
+            </button>
 
             <button
               type="button"
