@@ -14,6 +14,7 @@ const MenuPublicPage = lazy(() => import("@features/menu-public/ui/pages/MenuPub
 const TableManagementPage = lazy(() => import("@features/tables/ui/pages/TableManagementPage").then(m => ({ default: m.TableManagementPage })));
 const PosPage = lazy(() => import("@features/pos/ui/pages/PosPage").then(m => ({ default: m.PosPage })));
 const ReportsPage = lazy(() => import("@features/reports/ui/pages/ReportsPage").then(m => ({ default: m.ReportsPage })));
+const ShiftPage = lazy(() => import("@features/shifts/ui/pages/ShiftPage").then(m => ({ default: m.ShiftPage })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -137,30 +138,8 @@ export function AppRoutes() {
           />
 
           {/* Operasional Group */}
-          <Route
-            path="/shifts"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Manajemen Shift Kerja"
-                  category="Operasional"
-                  description="Penjadwalan jam kerja karyawan kasir, pelayan, dan tim dapur."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/cashier-session"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Sesi Kasir & Setoran Modal"
-                  category="Operasional"
-                  description="Pencatatan modal awal kasir dan rekapitulasi setoran tunai per shift."
-                />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/shifts" element={<ProtectedRoute><ShiftPage /></ProtectedRoute>} />
+          <Route path="/cashier-session" element={<ProtectedRoute><ShiftPage /></ProtectedRoute>} />
 
           {/* Laporan Group */}
           <Route
@@ -200,7 +179,7 @@ export function AppRoutes() {
             }
           />
           <Route path="/reports/products" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
-          <Route path="/reports/shifts" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
+          <Route path="/reports/shifts" element={<ProtectedRoute><ShiftPage /></ProtectedRoute>} />
           <Route path="/reports/tables" element={<ProtectedRoute><TableManagementPage /></ProtectedRoute>} />
 
           {/* Keuangan Group */}
