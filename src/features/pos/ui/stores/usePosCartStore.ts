@@ -12,7 +12,8 @@ export interface PosCartItem {
 interface PosCartState {
   items: PosCartItem[];
   tableNumber: number | null;
-  paymentMethod: "cash" | "qris" | "debit" | "credit" | "ewallet";
+  paymentMethod: "cash" | "qris" | "debit" | "credit" | "ewallet" | "gopay" | "ovo" | "dana" | "bank_transfer";
+  discountPercentage: number;
   lastOrderId: string | null;
   lastPaymentStatus: PaymentStatus | null;
   addItem: (menu: MenuItem, quantity?: number, variant?: string, notes?: string) => void;
@@ -22,8 +23,11 @@ interface PosCartState {
   clearCart: () => void;
   setTableNumber: (tableNumber: number | null) => void;
   setPaymentMethod: (method: PosCartState["paymentMethod"]) => void;
+  setDiscountPercentage: (discount: number) => void;
   setLastOrder: (orderId: string, paymentStatus: PaymentStatus) => void;
   getTotal: () => number;
+  getDiscountAmount: () => number;
+  getTaxAmount: () => number;
   getTotalWithTax: () => number;
   getItemCount: () => number;
 }
@@ -32,6 +36,7 @@ export const usePosCartStore = create<PosCartState>()((set, get) => ({
   items: [],
   tableNumber: null,
   paymentMethod: "cash",
+  discountPercentage: 0,
   lastOrderId: null,
   lastPaymentStatus: null,
 
@@ -87,7 +92,7 @@ export const usePosCartStore = create<PosCartState>()((set, get) => ({
   },
 
   clearCart: () => {
-    set({ items: [], tableNumber: null, lastOrderId: null, lastPaymentStatus: null });
+    set({ items: [], tableNumber: null, discountPercentage: 0, lastOrderId: null, lastPaymentStatus: null });
   },
 
   setTableNumber: (tableNumber) => {
@@ -96,6 +101,10 @@ export const usePosCartStore = create<PosCartState>()((set, get) => ({
 
   setPaymentMethod: (paymentMethod) => {
     set({ paymentMethod });
+  },
+
+  setDiscountPercentage: (discountPercentage) => {
+    set({ discountPercentage: Math.max(0, Math.min(100, discountPercentage)) });
   },
 
   setLastOrder: (orderId, paymentStatus) => {
@@ -109,8 +118,20 @@ export const usePosCartStore = create<PosCartState>()((set, get) => ({
     );
   },
 
+  getDiscountAmount: () => {
+    const total = get().getTotal();
+    const discount = get().discountPercentage;
+    return (total * discount) / 100;
+  },
+
+  getTaxAmount: () => {
+    const netTotal = get().getTotal() - get().getDiscountAmount();
+    return Math.round(netTotal * 0.1);
+  },
+
   getTotalWithTax: () => {
-    return get().getTotal() * 1.1;
+    const netTotal = get().getTotal() - get().getDiscountAmount();
+    return netTotal + get().getTaxAmount();
   },
 
   getItemCount: () => {

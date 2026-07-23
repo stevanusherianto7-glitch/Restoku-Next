@@ -14,6 +14,7 @@ import type { OrderStatus, CookingStatus } from "@features/pos/domain/entities/O
 import { getCloudinaryUrl, MENU_IMAGE_FALLBACK } from "@shared/infrastructure/media/cloudinary";
 
 import { CashierCalculatorModal } from "@features/pos/ui/components/CashierCalculatorModal";
+import { SplitBillModal } from "@features/pos/ui/components/SplitBillModal";
 
 interface MenuResponse {
   success: boolean;
@@ -39,15 +40,18 @@ interface ActiveOrder {
 const PAYMENT_METHODS = [
   { value: "cash" as const, label: "Tunai", icon: "💵" },
   { value: "qris" as const, label: "QRIS", icon: "📱" },
-  { value: "debit" as const, label: "Debit", icon: "💳" },
-  { value: "ewallet" as const, label: "E-Wallet", icon: "📲" },
+  { value: "gopay" as const, label: "GoPay", icon: "🟢" },
+  { value: "ovo" as const, label: "OVO", icon: "🟣" },
+  { value: "dana" as const, label: "DANA", icon: "🔵" },
+  { value: "bank_transfer" as const, label: "Transfer Bank", icon: "🏦" },
 ];
 
 export function PosPage() {
   const {
     items, addItem, removeItem, updateQuantity, clearCart,
-    getTotal, getTotalWithTax, getItemCount,
+    getTotal, getDiscountAmount, getTaxAmount, getTotalWithTax, getItemCount,
     tableNumber, setTableNumber, paymentMethod, setPaymentMethod,
+    discountPercentage, setDiscountPercentage,
     setLastOrder,
   } = usePosCartStore();
 
@@ -57,11 +61,14 @@ export function PosPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showCalculatorModal, setShowCalculatorModal] = useState(false);
+  const [showSplitBillModal, setShowSplitBillModal] = useState(false);
   const [showVoidModal, setShowVoidModal] = useState(false);
   const [voidOrderId, setVoidOrderId] = useState<string | null>(null);
   const [voidReason, setVoidReason] = useState("");
   const [managerPin, setManagerPin] = useState("");
   const [dailyPin] = useState("3018");
+  const [waNumber, setWaNumber] = useState("");
+  const [showDiscountInput, setShowDiscountInput] = useState(false);
 
   // Manual Item Entry State
   const [manualItemName, setManualItemName] = useState("");
@@ -148,6 +155,11 @@ export function PosPage() {
   const handleCheckout = () => {
     if (items.length === 0) return;
     setShowCalculatorModal(true);
+  };
+
+  const handleConfirmSplitPayment = (splitAmount: number, description: string) => {
+    setShowSplitBillModal(false);
+    alert(`Split Bill Berhasil Diproses!\n${description}`);
   };
 
   const handleConfirmCalculatorPayment = () => {
@@ -333,34 +345,16 @@ export function PosPage() {
           <div className="border-b border-slate-100 bg-slate-900 p-4 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-base font-extrabold">Struk Pesanan</h2>
+                <h2 className="text-base font-extrabold">Transaksi Baru</h2>
                 <p className="text-[11px] text-slate-400">{tableNumber ? `Meja No. ${tableNumber}` : "Pilih nomor meja di atas"}</p>
               </div>
-              <Badge variant="primary" size="md">{getItemCount()} Item</Badge>
+              <button onClick={clearCart} className="text-xs font-bold text-slate-400 hover:text-white">
+                Kosongkan
+              </button>
             </div>
           </div>
 
-          {/* Payment Method */}
-          {items.length > 0 && (
-            <div className="border-b border-slate-100 p-3">
-              <p className="text-caption font-semibold text-slate-600 mb-2">Metode Pembayaran</p>
-              <div className="grid grid-cols-4 gap-1.5">
-                {PAYMENT_METHODS.map((m) => (
-                  <button key={m.value} onClick={() => setPaymentMethod(m.value)}
-                    className={`rounded-xl p-2 text-center text-caption font-semibold transition-all ${
-                      paymentMethod === m.value
-                        ? "bg-cabe-50 text-cabe-700 border border-cabe-200"
-                        : "bg-slate-50 text-slate-600 border border-slate-100 hover:bg-slate-100"
-                    }`}>
-                    <span className="block text-lg">{m.icon}</span>
-                    <span className="text-[10px]">{m.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="max-h-[320px] overflow-y-auto p-4 space-y-3 divide-y divide-slate-100">
+          <div className="max-h-[260px] overflow-y-auto p-4 space-y-3 divide-y divide-slate-100">
             {items.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-slate-400">
                 <svg className="h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -428,33 +422,116 @@ export function PosPage() {
           </form>
 
           {items.length > 0 && (
-            <div className="border-t border-slate-100 bg-slate-50/80 p-4 space-y-3">
-              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
+            <div className="border-t border-slate-100 bg-slate-900 text-white p-4 space-y-3">
+              {/* Subtotal */}
+              <div className="flex items-center justify-between text-xs text-slate-300 font-bold">
                 <span>Subtotal</span>
-                <span className="font-bold text-slate-900">{formatPrice(getTotal())}</span>
+                <span className="font-extrabold text-white">{formatPrice(getTotal())}</span>
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
-                <span>PBJT (Pajak Restoran) 10%</span>
-                <span className="font-bold text-slate-900">{formatPrice(getTotal() * 0.1)}</span>
+
+              {/* % Tambah Diskon Feature */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setShowDiscountInput(!showDiscountInput)}
+                    className="text-amber-400 hover:text-amber-300 flex items-center gap-1 font-extrabold"
+                  >
+                    <span>% Tambah Diskon</span>
+                    <span className="text-[10px]">{showDiscountInput ? "▲" : "▼"}</span>
+                  </button>
+                  {discountPercentage > 0 && (
+                    <span className="text-emerald-400 font-extrabold">
+                      -{formatPrice(getDiscountAmount())} ({discountPercentage}%)
+                    </span>
+                  )}
+                </div>
+
+                {showDiscountInput && (
+                  <div className="flex items-center gap-1.5 pt-1">
+                    {[0, 5, 10, 15, 20].map((d) => (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => setDiscountPercentage(d)}
+                        className={`flex-1 py-1 rounded-lg text-[10px] font-black transition-all border ${
+                          discountPercentage === d
+                            ? "bg-amber-500 text-slate-950 border-amber-400"
+                            : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700"
+                        }`}
+                      >
+                        {d === 0 ? "0%" : `${d}%`}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
-                <span>Service Charge 5%</span>
-                <span className="font-bold text-slate-900">{formatPrice(getTotal() * 0.05)}</span>
+
+              {/* PPN 10% */}
+              <div className="flex items-center justify-between text-xs text-slate-300 font-medium">
+                <span>PPN 10%</span>
+                <span className="font-bold text-white">{formatPrice(getTaxAmount())}</span>
               </div>
-              <div className="border-t border-slate-200 pt-2 flex items-center justify-between">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Total Pembayaran</span>
-                <span className="text-lg font-black text-cabe-600">{formatPrice(getTotalWithTax())}</span>
+
+              {/* Total Pembayaran */}
+              <div className="border-t border-slate-800 pt-2 flex items-center justify-between">
+                <span className="text-sm font-extrabold uppercase tracking-wider text-white">Total Pembayaran</span>
+                <span className="text-lg font-black text-amber-400">{formatPrice(getTotalWithTax())}</span>
               </div>
-              <Button
-                onClick={handleCheckout}
-                disabled={items.length === 0}
-                className="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm shadow-md transition-all uppercase tracking-wider"
-              >
-                {checkoutMutation.isPending ? "Memproses..." : `Bayar · ${formatPrice(getTotalWithTax())}`}
-              </Button>
-              <button onClick={clearCart} className="w-full text-center text-[11px] font-bold text-slate-400 hover:text-rose-600">
-                Kosongkan Keranjang
-              </button>
+
+              {/* Payment Methods 3-column Grid */}
+              <div className="pt-2">
+                <p className="text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Metode Pembayaran</p>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {PAYMENT_METHODS.map((m) => (
+                    <button
+                      key={m.value}
+                      type="button"
+                      onClick={() => setPaymentMethod(m.value)}
+                      className={`rounded-xl py-2 px-1 text-center text-[11px] font-bold transition-all border ${
+                        paymentMethod === m.value
+                          ? "bg-amber-500/20 text-amber-400 border-amber-500/60 shadow-xs"
+                          : "bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-700"
+                      }`}
+                    >
+                      <span className="block text-xs">{m.icon}</span>
+                      <span>{m.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Notifikasi WA & Struk Digital Input */}
+              <div className="pt-2">
+                <label className="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">
+                  Notifikasi WA & Struk Digital
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nomor WA (contoh: 62812...)"
+                  value={waNumber}
+                  onChange={(e) => setWaNumber(e.target.value)}
+                  className="w-full rounded-xl bg-slate-800/90 border border-slate-700/80 px-3 py-2 text-xs font-bold text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Action Buttons Row: Split Bill & Bayar */}
+              <div className="pt-2 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowSplitBillModal(true)}
+                  className="rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 py-3.5 px-4 text-xs font-black text-white hover:text-amber-400 transition-all shadow-md shrink-0"
+                >
+                  Split Bill
+                </button>
+                <Button
+                  onClick={handleCheckout}
+                  disabled={items.length === 0}
+                  className="flex-1 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all uppercase tracking-wider rounded-2xl"
+                >
+                  {checkoutMutation.isPending ? "Memproses..." : `Bayar · ${formatPrice(getTotalWithTax())}`}
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -467,6 +544,15 @@ export function PosPage() {
         totalAmount={getTotalWithTax()}
         paymentMethod={paymentMethod}
         onConfirmPayment={handleConfirmCalculatorPayment}
+      />
+
+      {/* Split Bill Modal */}
+      <SplitBillModal
+        isOpen={showSplitBillModal}
+        onClose={() => setShowSplitBillModal(false)}
+        items={items}
+        totalWithTax={getTotalWithTax()}
+        onConfirmSplitPayment={handleConfirmSplitPayment}
       />
 
       {/* Void Modal */}
