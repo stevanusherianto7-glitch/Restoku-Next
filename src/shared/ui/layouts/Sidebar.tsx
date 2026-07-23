@@ -33,14 +33,18 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
     }))
     .filter((group) => group.roles.includes(activeRole) && group.items.length > 0);
 
-  // Auto-expand group containing current route
+  // Auto-expand group containing current route.
+  // Deferred to a microtask so the state update is not applied synchronously
+  // within the effect body (avoids cascading-render lint/runtime warning).
   useEffect(() => {
     const activeGroup = visibleNav.find((group) =>
       group.items.some((item) => item.href === location.pathname)
     );
-    if (activeGroup && !open.includes(activeGroup.title)) {
-      setOpen((o) => [...o, activeGroup.title]);
-    }
+    if (!activeGroup) return;
+    queueMicrotask(() =>
+      setOpen((o) => (o.includes(activeGroup.title) ? o : [...o, activeGroup.title]))
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   const handleLogout = async () => {

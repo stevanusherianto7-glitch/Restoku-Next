@@ -34,7 +34,9 @@ test.describe("Reports", () => {
   });
 
   test("should display top menu items", async ({ page }) => {
-    await expect(page.getByText(/menu terlaris/i).first()).toBeVisible();
+    const topMenu = page.getByText(/menu terlaris/i).first();
+    await topMenu.scrollIntoViewIfNeeded();
+    await expect(topMenu).toBeVisible();
   });
 });
 
@@ -61,7 +63,9 @@ test.describe("Table Management", () => {
 
   test("should open add table modal", async ({ page }) => {
     await page.getByRole("button", { name: /tambah meja/i }).first().click();
-    await expect(page.getByText(/tambah meja baru/i)).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /tambah meja baru/i })
+    ).toBeVisible();
   });
 
   test("should display QR code section", async ({ page }) => {

@@ -1,8 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { mockUsers } from "../data/mockData";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
-
 export const authHandlers = [
   http.post(/\/auth\/login$/, async ({ request }) => {
     const body = (await request.json()) as { email: string; password: string };

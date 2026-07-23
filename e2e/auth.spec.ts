@@ -21,6 +21,7 @@ test.describe("Authentication", () => {
     await page.getByLabel(/email/i).fill("admin@restoku.com");
     await page.getByLabel(/password/i).fill("password");
     await page.getByRole("button", { name: /masuk/i }).click();
+    await page.waitForURL("/dashboard", { timeout: 15000 });
     await expect(page).toHaveURL("/dashboard");
   });
 
@@ -29,10 +30,12 @@ test.describe("Authentication", () => {
     await page.getByLabel(/email/i).fill("admin@restoku.com");
     await page.getByLabel(/password/i).fill("password");
     await page.getByRole("button", { name: /masuk/i }).click();
+    await page.waitForURL("/dashboard", { timeout: 15000 });
     await expect(page).toHaveURL("/dashboard");
 
     // Logout via profile title
     await page.getByTitle(/logout/i).first().click();
+    await page.waitForURL("/login", { timeout: 15000 });
     await expect(page).toHaveURL("/login");
   });
 

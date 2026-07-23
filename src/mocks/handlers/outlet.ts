@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { mockOutlets, mockDashboardStats, mockTables, mockOrders } from "../data/mockData";
+import type { DashboardData } from "@features/dashboard/domain/entities/Dashboard";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
@@ -24,6 +25,42 @@ export const outletHandlers = [
 ];
 
 export const dashboardHandlers = [
+  http.get(`${API_BASE}/dashboard`, () => {
+    const today = mockDashboardStats.today;
+    const stats: DashboardData["stats"] = {
+      today_sales: today.revenue,
+      today_orders: today.orders,
+      active_orders: today.orders,
+      pending_orders: Math.floor(today.orders * 0.3),
+      low_stock_count: 2,
+      sales_change: 12.5,
+      orders_change: 8.3,
+    };
+    const recent_orders: DashboardData["recent_orders"] = mockOrders
+      .slice(0, 5)
+      .map((o) => ({
+        id: o.id,
+        table_number: o.table_number ?? 1,
+        items_count: Array.isArray(o.items) ? o.items.length : 1,
+        total: o.total ?? 0,
+        status: (o.status ?? "pending") as DashboardData["recent_orders"][number]["status"],
+        created_at: o.created_at ?? new Date().toISOString(),
+      }));
+    const top_menus: DashboardData["top_menus"] = (
+      today.topSellingItems ?? []
+    ).map((m, idx) => ({
+      id: `top-${idx + 1}`,
+      name: m.name,
+      quantity_sold: m.count,
+      revenue: 0,
+    }));
+    const hourly_sales: DashboardData["hourly_sales"] = [];
+    return HttpResponse.json({
+      success: true,
+      data: { stats, recent_orders, top_menus, hourly_sales },
+    });
+  }),
+
   http.get(`${API_BASE}/dashboard/stats`, ({ request }) => {
     const url = new URL(request.url);
     const period = url.searchParams.get("period") || "today";
