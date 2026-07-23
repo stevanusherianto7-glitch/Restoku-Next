@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { HALAL_LOGO_URL } from "@shared/infrastructure/media/cloudinary";
 
 interface WelcomeModalProps {
   isOpen: boolean;
@@ -35,10 +36,11 @@ export function WelcomeModal({
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-900 p-2 text-white font-black text-xs shadow-md border-2 border-amber-600/30">
                 {restaurantName ? restaurantName.slice(0, 2).toUpperCase() : "KV"}
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-extrabold text-[10px] flex-col leading-tight">
-                <span>HALAL</span>
-                <span className="text-[8px] font-medium text-emerald-600">INDONESIA</span>
-              </div>
+              <img
+                src={HALAL_LOGO_URL}
+                alt="Halal Indonesia"
+                className="h-12 w-auto object-contain"
+              />
             </div>
 
             {/* Title & Description */}
@@ -137,10 +139,11 @@ export function WelcomeModal({
           /* STEP 2: Cara Memesan Instructions */
           <div className="p-6 text-center space-y-5">
             {/* Header Icon */}
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-extrabold text-[10px] flex-col leading-tight">
-              <span>HALAL</span>
-              <span className="text-[8px] font-medium text-emerald-600">INDONESIA</span>
-            </div>
+            <img
+              src={HALAL_LOGO_URL}
+              alt="Halal Indonesia"
+              className="mx-auto h-12 w-auto object-contain"
+            />
 
             <div>
               <h2 className="text-lg font-black text-slate-900">Cara Memesan</h2>

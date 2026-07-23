@@ -12,7 +12,8 @@ import { OrderStatusModal } from "@features/menu-public/ui/components/OrderStatu
 import { GalleryTab } from "@features/menu-public/ui/components/GalleryTab";
 import { ReservationTab } from "@features/menu-public/ui/components/ReservationTab";
 import { useCartStore } from "@features/menu-public/ui/stores/useCartStore";
-import { formatPrice } from "@features/menu/domain/entities/MenuItem";
+import { formatPrice, getMenuBadges, isAvailable } from "@features/menu/domain/entities/MenuItem";
+import { HALAL_LOGO_URL } from "@shared/infrastructure/media/cloudinary";
 import { Button } from "@shared/ui/atoms/Button";
 
 interface Restaurant {
@@ -194,10 +195,11 @@ export function MenuPublicPage() {
 
           {/* Halal Logo & Orders Tracker Pill Button */}
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex flex-col items-center justify-center rounded-xl bg-emerald-50 px-2.5 py-1 border border-emerald-200 text-emerald-800 text-[9px] font-black leading-tight">
-              <span>HALAL</span>
-              <span className="text-[7px] text-emerald-600">INDONESIA</span>
-            </div>
+            <img
+              src={HALAL_LOGO_URL}
+              alt="Halal Indonesia"
+              className="h-10 w-auto object-contain hidden sm:block"
+            />
 
             <button
               type="button"

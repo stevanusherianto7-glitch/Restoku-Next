@@ -30,6 +30,10 @@ export const MENU_IMAGE_FALLBACK =
     `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="100%" height="100%" fill="#f1f5f9"/><path d="M60 250l60-60 50 50 70-80 60 70" fill="none" stroke="#cbd5e1" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="150" cy="140" r="22" fill="#cbd5e1"/></svg>`
   );
 
+/** Authentic Halal Indonesia logo Cloudinary CDN public_id & delivery URL */
+export const HALAL_LOGO_PUBLIC_ID = "Halal_Indonesia_Logo_purple";
+export const HALAL_LOGO_URL = getCloudinaryUrl("Halal_Indonesia_Logo_purple");
+
 function buildTransformSegment(t: CloudinaryTransform): string {
   const parts: string[] = [];
   if (t.width) parts.push(`w_${t.width}`);

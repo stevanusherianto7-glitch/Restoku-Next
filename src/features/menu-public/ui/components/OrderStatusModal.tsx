@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { formatPrice } from "@features/menu/domain/entities/MenuItem";
+import { HALAL_LOGO_URL } from "@shared/infrastructure/media/cloudinary";
 
 interface OrderTrackerItem {
   id: string;
@@ -77,6 +78,11 @@ export function OrderStatusModal({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <img
+              src={HALAL_LOGO_URL}
+              alt="Halal Indonesia"
+              className="h-9 w-auto object-contain"
+            />
             <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-900 border border-amber-200">
               ⏱️ {orders.length} Pesanan
             </span>
