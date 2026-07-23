@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMenuViewModel } from "@features/menu/ui/viewmodels/useMenuViewModel";
 import { MenuList } from "@features/menu/ui/components/MenuList";
+import { MenuFormModal } from "@features/menu/ui/components/MenuFormModal";
 import { Button } from "@shared/ui/atoms/Button";
 import { Input } from "@shared/ui/atoms/Input";
 import { AdminLayout } from "@shared/ui/templates/AdminLayout";
@@ -12,11 +13,17 @@ export function MenuPage() {
     isLoading,
     filters,
     updateFilters,
+    createMenu,
+    updateMenu,
     deleteMenu,
+    isCreating,
+    isUpdating,
+    isDeleting,
   } = useMenuViewModel();
 
   const [search, setSearch] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<MenuItem | null>(null);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -24,8 +31,14 @@ export function MenuPage() {
     updateFilters({ search });
   };
 
+  const handleCreateNew = () => {
+    setSelectedMenu(null);
+    setShowFormModal(true);
+  };
+
   const handleEdit = (menu: MenuItem) => {
     setSelectedMenu(menu);
+    setShowFormModal(true);
   };
 
   const handleDelete = (menu: MenuItem) => {
@@ -41,15 +54,25 @@ export function MenuPage() {
     }
   };
 
+  const handleFormSubmit = async (data: Omit<MenuItem, "id" | "created_at" | "updated_at">) => {
+    if (selectedMenu) {
+      await updateMenu({ id: selectedMenu.id, data });
+    } else {
+      await createMenu(data);
+    }
+    setShowFormModal(false);
+    setSelectedMenu(null);
+  };
+
   return (
     <AdminLayout title="Kelola Katalog Menu">
       {/* Top Banner Action */}
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl bg-white p-5 shadow-sm border border-slate-200/80">
         <div>
           <h2 className="text-lg font-extrabold text-slate-900">Katalog Hidangan</h2>
-          <p className="text-xs text-slate-500">Kelola daftar makanan, minuman, varian harga, dan ketersediaan stok.</p>
+          <p className="text-xs text-slate-500">Kelola daftar makanan, minuman, varian harga, dan ketersediaan stok (Full CRUD).</p>
         </div>
-        <Button variant="primary" size="md">
+        <Button variant="primary" size="md" onClick={handleCreateNew}>
           + Tambah Menu Baru
         </Button>
       </div>
@@ -83,9 +106,9 @@ export function MenuPage() {
                 : "bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-100"
             }`}
           >
-            Semua
+            Semua ({menus.length})
           </button>
-          {(["makanan", "minuman", "tambahan"] as CategoryId[]).map((cat) => (
+          {(["makanan", "minuman", "tambahan", "paket"] as CategoryId[]).map((cat) => (
             <button
               key={cat}
               onClick={() => updateFilters({ category: cat })}
@@ -109,9 +132,21 @@ export function MenuPage() {
         onDelete={handleDelete}
       />
 
-      {/* Delete Modal */}
+      {/* Create & Edit Modal */}
+      <MenuFormModal
+        isOpen={showFormModal}
+        onClose={() => {
+          setShowFormModal(false);
+          setSelectedMenu(null);
+        }}
+        onSubmit={handleFormSubmit}
+        initialData={selectedMenu}
+        isSubmitting={isCreating || isUpdating}
+      />
+
+      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
           <div className="mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-100">
             <h3 className="text-base font-extrabold text-slate-900">Hapus Menu</h3>
             <p className="mt-2 text-xs text-slate-600 leading-relaxed">
@@ -131,9 +166,10 @@ export function MenuPage() {
               <Button
                 variant="danger"
                 size="sm"
+                disabled={isDeleting}
                 onClick={confirmDelete}
               >
-                Ya, Hapus
+                {isDeleting ? "Menghapus..." : "Ya, Hapus"}
               </Button>
             </div>
           </div>

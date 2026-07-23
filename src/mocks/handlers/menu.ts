@@ -60,36 +60,53 @@ export const menuHandlers = [
     const body = (await request.json()) as Record<string, unknown>;
     const newMenu = {
       id: `menu-${Date.now()}`,
-      ...body,
+      name: (body.name as string) || "Menu Baru",
+      description: (body.description as string) || "",
+      price: Number(body.price) || 0,
+      category_id: (body.category_id as string) || "cat-makanan",
+      category: (body.category as string) || "makanan",
+      image_url: (body.image_url as string) || "Nasi_Goreng_Jawa_mqtalj",
+      status: (body.status as string) || "active",
+      is_popular: Boolean(body.is_popular),
+      is_new: Boolean(body.is_new),
+      is_promo: Boolean(body.is_promo),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
+    mockMenuItems.unshift(newMenu as any);
     return HttpResponse.json({ success: true, data: newMenu }, { status: 201 });
   }),
 
   http.put(`${API_BASE}/menus/:id`, async ({ params, request }) => {
-    const menu = mockMenuItems.find((m) => m.id === params.id);
-    if (!menu) {
+    const index = mockMenuItems.findIndex((m) => m.id === params.id);
+    if (index === -1) {
       return HttpResponse.json(
         { success: false, message: "Menu not found" },
         { status: 404 }
       );
     }
     const body = (await request.json()) as Record<string, unknown>;
+    const updated = {
+      ...mockMenuItems[index],
+      ...body,
+      updated_at: new Date().toISOString(),
+    };
+    mockMenuItems[index] = updated as any;
     return HttpResponse.json({
       success: true,
-      data: { ...menu, ...body, updated_at: new Date().toISOString() },
+      data: updated,
     });
   }),
 
   http.delete(`${API_BASE}/menus/:id`, ({ params }) => {
-    const menu = mockMenuItems.find((m) => m.id === params.id);
-    if (!menu) {
+    const index = mockMenuItems.findIndex((m) => m.id === params.id);
+    if (index === -1) {
       return HttpResponse.json(
         { success: false, message: "Menu not found" },
         { status: 404 }
       );
     }
+    mockMenuItems.splice(index, 1);
     return HttpResponse.json({ success: true, message: "Menu deleted" });
   }),
 
