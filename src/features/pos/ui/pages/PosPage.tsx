@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@shared/infrastructure/http/apiClient";
 import type { MenuItem } from "@features/menu/domain/entities/MenuItem";
+import { createMenuId, createCategoryId } from "@features/menu/domain/entities/MenuItem";
 import { usePosCartStore } from "@features/pos/ui/stores/usePosCartStore";
 import { formatPrice } from "@features/menu/domain/entities/MenuItem";
 import { Button } from "@shared/ui/atoms/Button";
@@ -139,10 +140,16 @@ export function PosPage() {
     if (isNaN(priceNum) || priceNum <= 0) return;
 
     addItem({
-      id: `manual-${Date.now()}`,
+      id: createMenuId(`manual-${Date.now()}`),
       name: manualItemName.trim(),
       price: priceNum,
-      category: "Tambahan",
+      category_id: createCategoryId("cat-tambahan"),
+      category: "tambahan",
+      image_url: null,
+      description: null,
+      is_popular: false,
+      is_new: false,
+      is_promo: false,
       status: "active",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -157,7 +164,7 @@ export function PosPage() {
     setShowCalculatorModal(true);
   };
 
-  const handleConfirmSplitPayment = (splitAmount: number, description: string) => {
+  const handleConfirmSplitPayment = (_splitAmount: number, description: string) => {
     setShowSplitBillModal(false);
     alert(`Split Bill Berhasil Diproses!\n${description}`);
   };

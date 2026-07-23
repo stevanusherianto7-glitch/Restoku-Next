@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@shared/ui/atoms/Button";
 import { Input } from "@shared/ui/atoms/Input";
-import type { MenuItem, CategoryId } from "@features/menu/domain/entities/MenuItem";
+import type { MenuItem, MenuCategory } from "@features/menu/domain/entities/MenuItem";
 import { createCategoryId } from "@features/menu/domain/entities/MenuItem";
 import { getCloudinaryUrl, convertFileToWebp, MENU_IMAGE_FALLBACK } from "@shared/infrastructure/media/cloudinary";
 
@@ -39,7 +39,7 @@ export function MenuFormModal({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | "">(30000);
-  const [category, setCategory] = useState<CategoryId>("makanan");
+  const [category, setCategory] = useState<MenuCategory>("makanan");
   const [imageUrl, setImageUrl] = useState("Nasi_Goreng_Jawa_mqtalj");
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [isPopular, setIsPopular] = useState(false);
@@ -56,7 +56,7 @@ export function MenuFormModal({
       setName(initialData.name);
       setDescription(initialData.description || "");
       setPrice(initialData.price);
-      setCategory(initialData.category || "makanan");
+      setCategory((initialData.category as MenuCategory) || "makanan");
       setImageUrl(initialData.image_url || "Nasi_Goreng_Jawa_mqtalj");
       setStatus(initialData.status || "active");
       setIsPopular(!!initialData.is_popular);
@@ -190,7 +190,7 @@ export function MenuFormModal({
               <label className="block text-xs font-bold text-slate-700 mb-1">Kategori</label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as CategoryId)}
+                onChange={(e) => setCategory(e.target.value as MenuCategory)}
                 className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:border-cabe-500 focus:outline-none"
               >
                 <option value="makanan">Makanan</option>

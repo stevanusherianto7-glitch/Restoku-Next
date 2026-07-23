@@ -43,7 +43,7 @@ export function TableManagementPage() {
     const results = await generateQr([tableId]);
     const firstResult = results[0];
     const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
-    const targetUrl = firstResult?.targetUrl || `${origin}/menu/${restaurantId}?table=${table?.number || 1}`;
+    const targetUrl = `${origin}/menu/${restaurantId}?table=${table?.number || 1}`;
 
     if (firstResult && table) {
       setQrModalData({
@@ -73,7 +73,7 @@ export function TableManagementPage() {
         tableNumber: num,
         tableName: table ? table.name : `Meja ${num}`,
         qrUrl: res.qrUrl,
-        targetUrl: res.targetUrl || `${origin}/menu/${restaurantId}?table=${num}`,
+        targetUrl: `${origin}/menu/${restaurantId}?table=${num}`,
       };
     });
     setQrModalData({

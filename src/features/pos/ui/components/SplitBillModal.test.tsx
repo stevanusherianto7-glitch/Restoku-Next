@@ -23,7 +23,7 @@ describe("SplitBillModal", () => {
       <SplitBillModal
         isOpen={true}
         onClose={vi.fn()}
-        items={MOCK_ITEMS}
+        items={MOCK_ITEMS as any}
         totalWithTax={30800}
         onConfirmSplitPayment={vi.fn()}
       />
@@ -38,7 +38,7 @@ describe("SplitBillModal", () => {
       <SplitBillModal
         isOpen={true}
         onClose={vi.fn()}
-        items={MOCK_ITEMS}
+        items={MOCK_ITEMS as any}
         totalWithTax={32200}
         onConfirmSplitPayment={vi.fn()}
       />
@@ -54,7 +54,7 @@ describe("SplitBillModal", () => {
       <SplitBillModal
         isOpen={true}
         onClose={vi.fn()}
-        items={MOCK_ITEMS}
+        items={MOCK_ITEMS as any}
         totalWithTax={32200}
         onConfirmSplitPayment={onConfirmSplitPayment}
       />

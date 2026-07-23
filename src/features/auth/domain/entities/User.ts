@@ -1,6 +1,6 @@
 import type { UserId } from "@shared/domain/types";
 
-export type UserRole = "owner" | "manager" | "cashier" | "kitchen";
+export type UserRole = "owner" | "manager" | "cashier" | "kitchen" | "waiter";
 
 export interface User {
   id: UserId;
