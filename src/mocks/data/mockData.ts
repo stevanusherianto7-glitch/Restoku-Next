@@ -51,7 +51,7 @@ export const mockMenuItems: MenuItem[] = [
     price: 35000,
     category_id: createCategoryId("cat-makanan"),
     category: "makanan",
-    image_url: "menu/nasi-goreng-spesial",
+    image_url: "Pulpy_Orange_wckhxi",
     status: "active",
     is_popular: true,
     is_new: false,
