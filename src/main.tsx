@@ -25,12 +25,11 @@ if ("serviceWorker" in navigator && import.meta.env.VITE_USE_MOCKS !== "true") {
   });
 }
 
-// Render app immediately to ensure DOM mounts without delay
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
-
-// Enable MSW mocking in background if enabled via env
-enableMocking();
+// Ensure MSW is ready before rendering so API requests are intercepted
+enableMocking().then(() => {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  );
+});
