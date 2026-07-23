@@ -12,6 +12,7 @@ const DashboardPage = lazy(() => import("@features/dashboard/ui/pages/DashboardP
 const MenuPage = lazy(() => import("@features/menu/ui/pages/MenuPage").then(m => ({ default: m.MenuPage })));
 const MenuPublicPage = lazy(() => import("@features/menu-public/ui/pages/MenuPublicPage").then(m => ({ default: m.MenuPublicPage })));
 const TableManagementPage = lazy(() => import("@features/tables/ui/pages/TableManagementPage").then(m => ({ default: m.TableManagementPage })));
+const QrCodeMejaPage = lazy(() => import("@features/tables/ui/pages/QrCodeMejaPage").then(m => ({ default: m.QrCodeMejaPage })));
 const PosPage = lazy(() => import("@features/pos/ui/pages/PosPage").then(m => ({ default: m.PosPage })));
 const ReportsPage = lazy(() => import("@features/reports/ui/pages/ReportsPage").then(m => ({ default: m.ReportsPage })));
 const ShiftPage = lazy(() => import("@features/shifts/ui/pages/ShiftPage").then(m => ({ default: m.ShiftPage })));
@@ -195,7 +196,7 @@ export function AppRoutes() {
               </ProtectedRoute>
             }
           />
-          <Route path="/settings/qr" element={<ProtectedRoute><TableManagementPage /></ProtectedRoute>} />
+          <Route path="/settings/qr" element={<ProtectedRoute><QrCodeMejaPage /></ProtectedRoute>} />
           <Route
             path="/settings/printer"
             element={

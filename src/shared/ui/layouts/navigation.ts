@@ -33,7 +33,7 @@ export const navigation: NavGroup[] = [
     items: [
       { name: "Dashboard", href: "/dashboard", roles: ["kasir", "waiter", "manager", "owner"] },
       { name: "Kasir (POS)", href: "/pos", roles: ["kasir", "manager", "owner"] },
-      { name: "Monitor Pesanan", href: "/orders", roles: ["kasir", "waiter", "manager", "owner"] },
+      { name: "Monitor Pesanan (KDS)", href: "/orders", roles: ["kasir", "waiter", "manager", "owner"] },
       { name: "Dapur (KDS)", href: "/kitchen", roles: ["kitchen", "waiter", "manager", "owner"] },
       { name: "Waiter & Bar Display", href: "/waiter-bar", roles: ["waiter", "manager", "owner"] },
     ],
@@ -45,7 +45,7 @@ export const navigation: NavGroup[] = [
     items: [
       { name: "Produk & Menu", href: "/menu", roles: ["manager", "owner"] },
       { name: "Katalog Menu", href: "/menu-catalog", roles: ["kasir", "waiter", "manager", "owner"] },
-      { name: "Buku Menu Digital", href: "/menu-digital", roles: ["manager", "owner"] },
+      { name: "Buku Menu Digital (Tamu)", href: "/menu-digital", roles: ["manager", "owner"] },
       { name: "Manajemen Meja", href: "/tables", roles: ["kasir", "waiter", "manager", "owner"] },
     ],
   },
