@@ -4,6 +4,41 @@ import { Button } from "@shared/ui/atoms/Button";
 
 type DemoTab = "pos" | "analytics" | "kds" | "qr";
 
+const posMenuItems = [
+  {
+    name: "Nasi Goreng Spesial",
+    price: "Rp 25.000",
+    image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=500&q=80",
+    badge: "Terlaris 🔥",
+  },
+  {
+    name: "Ayam Bakar Madu",
+    price: "Rp 28.000",
+    image: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=500&q=80",
+    badge: "Chef Pick ⭐",
+  },
+  {
+    name: "Es Teh Manis Jumbo",
+    price: "Rp 7.000",
+    image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    name: "Soto Ayam Lamongan",
+    price: "Rp 22.000",
+    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    name: "Sate Ayam Madura",
+    price: "Rp 30.000",
+    image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=500&q=80",
+  },
+  {
+    name: "Es Jeruk Peras Segar",
+    price: "Rp 9.000",
+    image: "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=500&q=80",
+  },
+];
+
 export function Hero() {
   const [activeTab, setActiveTab] = useState<DemoTab>("pos");
 
@@ -80,35 +115,32 @@ export function Hero() {
             <div className="flex text-amber-400">
               {"★".repeat(5)}
             </div>
-            <span className="text-white font-bold">4.9/5</span>
-            <span className="text-slate-500">(1.2k+ Review)</span>
+            <span><strong className="text-white">4.9/5.0</strong> Rating Kepuasan</span>
           </div>
           <div className="flex items-center gap-2 bg-slate-900/60 px-4 py-2 rounded-xl border border-slate-800/80">
-            <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-            <span className="text-emerald-400 font-bold">500+</span>
-            <span>Restoran & Outlet</span>
+            <span className="text-emerald-400">⚡</span>
+            <span>Offline-First (Tanpa Takut Mati Lampu/Internet)</span>
           </div>
           <div className="flex items-center gap-2 bg-slate-900/60 px-4 py-2 rounded-xl border border-slate-800/80">
-            <span className="text-cabe-400 font-bold">10 Juta+</span>
-            <span>Pesanan Diproses</span>
+            <span className="text-cabe-400">🛡️</span>
+            <span>Uji Coba 14 Hari Tanpa Kartu Kredit</span>
           </div>
         </div>
 
-        {/* Interactive App Mockup Preview (Linear/Stripe Style Window) */}
+        {/* Interactive Interactive App Mockup Preview */}
         <div id="demo" className="mt-16 relative mx-auto max-w-6xl">
-          {/* Outer Window Container */}
-          <div className="relative rounded-3xl border border-slate-800/90 bg-slate-900/90 p-3 sm:p-4 shadow-2xl shadow-cabe-950/40 backdrop-blur-2xl">
-            {/* Window Top Controls & Tab Switcher */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 bg-slate-950/80 rounded-2xl border border-slate-800/80 mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-rose-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-                <span className="ml-2 text-xs font-mono text-slate-500 hidden sm:inline">restoku.com/app</span>
-              </div>
+          {/* Glassmorphic Laptop / App Frame */}
+          <div className="relative rounded-3xl p-3 bg-gradient-to-b from-slate-700/50 via-slate-800/30 to-slate-900/80 border border-slate-700/60 shadow-2xl backdrop-blur-xl">
 
-              {/* Interactive Demo Tabs */}
-              <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 w-full sm:w-auto overflow-x-auto">
+            {/* Window Title Bar */}
+            <div className="flex items-center justify-between px-4 py-3 bg-slate-900/90 rounded-t-2xl border-b border-slate-800/80">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+                <span className="w-3 h-3 rounded-full bg-yellow-500/80 inline-block"></span>
+                <span className="w-3 h-3 rounded-full bg-green-500/80 inline-block"></span>
+                <span className="ml-3 text-xs font-mono text-slate-400 hidden sm:inline">Restoku POS & Management System v2.4.0</span>
+              </div>
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab("pos")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
@@ -117,7 +149,7 @@ export function Hero() {
                       : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
                   }`}
                 >
-                  📱 POS Kasir
+                  💻 POS Kasir
                 </button>
                 <button
                   onClick={() => setActiveTab("analytics")}
@@ -153,7 +185,7 @@ export function Hero() {
             </div>
 
             {/* Dynamic Screen Contents */}
-            <div className="relative rounded-2xl overflow-hidden bg-slate-950 p-6 text-left border border-slate-800/60 min-h-[380px]">
+            <div className="relative rounded-b-2xl overflow-hidden bg-slate-950 p-6 text-left border border-slate-800/60 min-h-[420px]">
               {/* TAB 1: POS KASIR */}
               {activeTab === "pos" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
@@ -162,24 +194,41 @@ export function Hero() {
                       <h3 className="text-base font-bold text-white">Pilih Menu Hidangan</h3>
                       <span className="text-xs text-cabe-400 bg-cabe-500/10 px-2.5 py-1 rounded-md border border-cabe-500/20 font-mono">Meja No. 05</span>
                     </div>
+
+                    {/* Hyperrealistic Food Menu Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl hover:border-cabe-500/50 cursor-pointer transition-all">
-                        <div className="text-2xl mb-1">🍲</div>
-                        <p className="text-xs font-bold text-white">Nasi Goreng Spesial</p>
-                        <p className="text-xs font-extrabold text-cabe-400 mt-1">Rp 25.000</p>
-                      </div>
-                      <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl hover:border-cabe-500/50 cursor-pointer transition-all">
-                        <div className="text-2xl mb-1">🍗</div>
-                        <p className="text-xs font-bold text-white">Ayam Bakar Madu</p>
-                        <p className="text-xs font-extrabold text-cabe-400 mt-1">Rp 28.000</p>
-                      </div>
-                      <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl hover:border-cabe-500/50 cursor-pointer transition-all">
-                        <div className="text-2xl mb-1">🥤</div>
-                        <p className="text-xs font-bold text-white">Es Teh Manis Jumbo</p>
-                        <p className="text-xs font-extrabold text-cabe-400 mt-1">Rp 7.000</p>
-                      </div>
+                      {posMenuItems.map((item) => (
+                        <div
+                          key={item.name}
+                          className="group bg-slate-900/90 border border-slate-800 rounded-xl overflow-hidden hover:border-cabe-500/60 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 shadow-md flex flex-col justify-between"
+                        >
+                          <div className="h-24 sm:h-28 w-full overflow-hidden relative bg-slate-950">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+                            {item.badge && (
+                              <span className="absolute top-1.5 left-1.5 bg-slate-950/80 backdrop-blur-md text-amber-300 border border-amber-500/30 text-[9px] font-bold px-2 py-0.5 rounded-full">
+                                {item.badge}
+                              </span>
+                            )}
+                            <span className="absolute bottom-1.5 right-1.5 bg-cabe-600 hover:bg-cabe-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md shadow-sm transition-colors">
+                              + Add
+                            </span>
+                          </div>
+                          <div className="p-2.5">
+                            <p className="text-xs font-bold text-white line-clamp-1 group-hover:text-cabe-400 transition-colors">
+                              {item.name}
+                            </p>
+                            <p className="text-xs font-extrabold text-cabe-400 mt-0.5">{item.price}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
+
                   {/* Cart Panel */}
                   <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl flex flex-col justify-between">
                     <div>
@@ -228,24 +277,25 @@ export function Hero() {
                     </div>
                     <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl">
                       <p className="text-xs font-medium text-slate-400">Menu Terlaris</p>
-                      <p className="text-2xl font-black text-cabe-400 mt-1">Nasi Goreng #1</p>
-                      <span className="text-[10px] font-bold text-cabe-400 bg-cabe-500/10 px-2 py-0.5 rounded mt-2 inline-block">68 Porsi Terjual</span>
+                      <p className="text-base font-bold text-white mt-1">Nasi Goreng Spesial</p>
+                      <span className="text-[10px] font-medium text-slate-400">54 Porsi Terjual</span>
                     </div>
                   </div>
-                  {/* Chart Visual Simulation */}
-                  <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-xs font-bold text-slate-300">Grafik Penjualan Per Jam (08:00 - 21:00)</h4>
-                      <span className="text-[10px] text-slate-500">Live Update</span>
+
+                  {/* Simulated Chart Bars */}
+                  <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-200">Grafik Penjualan Real-Time</span>
+                      <span className="text-slate-400 font-mono">08:00 - 21:00 WIB</span>
                     </div>
-                    <div className="h-28 flex items-end justify-between gap-2 pt-4">
-                      {[35, 45, 60, 95, 80, 70, 100, 85, 65, 40].map((h, idx) => (
-                        <div key={idx} className="flex-1 flex flex-col items-center gap-1 group">
+                    <div className="h-28 flex items-end gap-3 pt-4 border-b border-slate-800 pb-2">
+                      {[35, 55, 40, 75, 90, 60, 85, 95, 70, 80, 65, 50].map((h, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
                           <div
                             style={{ height: `${h}%` }}
-                            className="w-full bg-gradient-to-t from-cabe-700 to-cabe-500 rounded-t group-hover:from-cabe-600 group-hover:to-orange-400 transition-all"
+                            className="w-full bg-gradient-to-t from-cabe-600 to-amber-400 rounded-t group-hover:from-cabe-500 group-hover:to-amber-300 transition-all"
                           ></div>
-                          <span className="text-[9px] font-mono text-slate-500">{idx + 12}:00</span>
+                          <span className="text-[9px] text-slate-400 font-mono">{i + 8}h</span>
                         </div>
                       ))}
                     </div>
@@ -322,9 +372,6 @@ export function Hero() {
               )}
             </div>
           </div>
-
-          {/* Ambient Glow Drop Shadow behind Window */}
-          <div className="absolute -inset-4 bg-gradient-to-r from-cabe-600/20 via-orange-500/15 to-amber-500/20 blur-3xl -z-10 rounded-[40px]"></div>
         </div>
       </div>
     </section>
