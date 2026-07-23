@@ -13,6 +13,8 @@ import { useOfflineSync } from "@features/offline/ui/components/useOfflineSync";
 import type { OrderStatus, CookingStatus } from "@features/pos/domain/entities/Order";
 import { getCloudinaryUrl, MENU_IMAGE_FALLBACK } from "@shared/infrastructure/media/cloudinary";
 
+import { CashierCalculatorModal } from "@features/pos/ui/components/CashierCalculatorModal";
+
 interface MenuResponse {
   success: boolean;
   data: MenuItem[];
@@ -54,10 +56,16 @@ export function PosPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showCalculatorModal, setShowCalculatorModal] = useState(false);
   const [showVoidModal, setShowVoidModal] = useState(false);
   const [voidOrderId, setVoidOrderId] = useState<string | null>(null);
   const [voidReason, setVoidReason] = useState("");
   const [managerPin, setManagerPin] = useState("");
+  const [dailyPin] = useState("3018");
+
+  // Manual Item Entry State
+  const [manualItemName, setManualItemName] = useState("");
+  const [manualItemPrice, setManualItemPrice] = useState("");
 
   const { data: menuData, isLoading } = useQuery<MenuResponse>({
     queryKey: ["menus", "pos"],
@@ -117,9 +125,33 @@ export function PosPage() {
 
   const categories = [...new Set(menus.map((m) => m.category))];
 
+  const handleAddManualItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualItemName.trim() || !manualItemPrice) return;
+    const priceNum = Number(manualItemPrice);
+    if (isNaN(priceNum) || priceNum <= 0) return;
+
+    addItem({
+      id: `manual-${Date.now()}`,
+      name: manualItemName.trim(),
+      price: priceNum,
+      category: "Tambahan",
+      status: "active",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+
+    setManualItemName("");
+    setManualItemPrice("");
+  };
+
   const handleCheckout = () => {
     if (items.length === 0) return;
+    setShowCalculatorModal(true);
+  };
 
+  const handleConfirmCalculatorPayment = () => {
+    setShowCalculatorModal(false);
     if (!navigator.onLine) {
       saveOfflineOrder({
         tenantId: "current",
@@ -213,22 +245,35 @@ export function PosPage() {
                 className="w-20 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-900 focus:border-cabe-500 focus:outline-none"
               />
             </div>
+            {/* Daily PIN Badge (Top Bar) */}
+            <div className="flex items-center gap-1.5 rounded-xl bg-amber-500/10 px-3 py-1.5 text-xs font-black text-amber-500 border border-amber-500/40 shrink-0 cursor-pointer shadow-2xs hover:bg-amber-500/20 transition-all" title="PIN Meja Harian Kasir (4 Digit)">
+              <span>🔑 PIN Harian</span>
+              <span className="tracking-widest font-black text-amber-400">{dailyPin}</span>
+            </div>
           </div>
 
-          {/* Category Tabs */}
-          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-            <button onClick={() => setSelectedCategory(null)}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold whitespace-nowrap ${!selectedCategory ? "bg-slate-900 text-white shadow-md" : "bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-100"}`}>
-              Semua Menu
-              <span className={`rounded-md px-1.5 py-0.5 text-[10px] ${!selectedCategory ? "bg-white/20" : "bg-slate-100"}`}>{menus.length}</span>
-            </button>
-            {categories.map((cat) => (
-              <button key={cat} onClick={() => setSelectedCategory(cat)}
-                className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold capitalize whitespace-nowrap ${selectedCategory === cat ? "bg-cabe-600 text-white shadow-md" : "bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-100"}`}>
-                {cat}
-                <span className="rounded-md px-1.5 py-0.5 text-[10px] bg-white/20 text-white">{menus.filter((m) => m.category === cat).length}</span>
+          {/* Category Tabs & Daily PIN Header Badge */}
+          <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar">
+            <div className="flex gap-2">
+              <button onClick={() => setSelectedCategory(null)}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold whitespace-nowrap ${!selectedCategory ? "bg-slate-900 text-white shadow-md" : "bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-100"}`}>
+                Semua
+                <span className={`rounded-md px-1.5 py-0.5 text-[10px] ${!selectedCategory ? "bg-white/20" : "bg-slate-100"}`}>{menus.length}</span>
               </button>
-            ))}
+              {categories.map((cat) => (
+                <button key={cat} onClick={() => setSelectedCategory(cat)}
+                  className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold capitalize whitespace-nowrap ${selectedCategory === cat ? "bg-cabe-600 text-white shadow-md" : "bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-100"}`}>
+                  {cat}
+                  <span className="rounded-md px-1.5 py-0.5 text-[10px] bg-white/20 text-white">{menus.filter((m) => m.category === cat).length}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Daily PIN Badge (Menu Grid Header) */}
+            <div className="hidden md:flex items-center gap-1.5 rounded-xl bg-slate-900 px-3 py-2 text-xs font-black text-amber-400 border border-amber-500/40 shrink-0 cursor-pointer shadow-sm hover:scale-105 transition-all">
+              <span>🔑 PIN</span>
+              <span className="tracking-widest text-amber-300">{dailyPin}</span>
+            </div>
           </div>
 
           {/* Menu Grid */}
@@ -353,6 +398,35 @@ export function PosPage() {
             )}
           </div>
 
+          {/* Manual Item Adder */}
+          <form onSubmit={handleAddManualItem} className="border-t border-slate-100 p-3 bg-slate-50/70 space-y-1.5">
+            <p className="text-[10px] font-black uppercase text-amber-700 tracking-wider">
+              + TAMBAH ITEM MANUAL / TAMBAHAN
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Nama item (cth. Kerupuk, Extra Ice)"
+                value={manualItemName}
+                onChange={(e) => setManualItemName(e.target.value)}
+                className="flex-1 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-900 focus:border-amber-500 focus:outline-none"
+              />
+              <input
+                type="number"
+                placeholder="Harga"
+                value={manualItemPrice}
+                onChange={(e) => setManualItemPrice(e.target.value)}
+                className="w-20 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-900 focus:border-amber-500 focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="rounded-xl bg-cabe-600 text-white px-3 py-1.5 text-xs font-extrabold hover:bg-cabe-700 transition-all shadow-sm shrink-0"
+              >
+                Tambah
+              </button>
+            </div>
+          </form>
+
           {items.length > 0 && (
             <div className="border-t border-slate-100 bg-slate-50/80 p-4 space-y-3">
               <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
@@ -360,15 +434,23 @@ export function PosPage() {
                 <span className="font-bold text-slate-900">{formatPrice(getTotal())}</span>
               </div>
               <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
-                <span>Pajak Resto (10%)</span>
+                <span>PBJT (Pajak Restoran) 10%</span>
                 <span className="font-bold text-slate-900">{formatPrice(getTotal() * 0.1)}</span>
               </div>
+              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
+                <span>Service Charge 5%</span>
+                <span className="font-bold text-slate-900">{formatPrice(getTotal() * 0.05)}</span>
+              </div>
               <div className="border-t border-slate-200 pt-2 flex items-center justify-between">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Total</span>
+                <span className="text-xs font-extrabold uppercase tracking-wider text-slate-900">Total Pembayaran</span>
                 <span className="text-lg font-black text-cabe-600">{formatPrice(getTotalWithTax())}</span>
               </div>
-              <Button onClick={handleCheckout} disabled={items.length === 0} className="w-full py-3" variant="primary">
-                {checkoutMutation.isPending ? "Memproses..." : "Proses Pembayaran"}
+              <Button
+                onClick={handleCheckout}
+                disabled={items.length === 0}
+                className="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm shadow-md transition-all uppercase tracking-wider"
+              >
+                {checkoutMutation.isPending ? "Memproses..." : `Bayar · ${formatPrice(getTotalWithTax())}`}
               </Button>
               <button onClick={clearCart} className="w-full text-center text-[11px] font-bold text-slate-400 hover:text-rose-600">
                 Kosongkan Keranjang
@@ -377,6 +459,15 @@ export function PosPage() {
           )}
         </div>
       </div>
+
+      {/* Cashier Calculator Modal */}
+      <CashierCalculatorModal
+        isOpen={showCalculatorModal}
+        onClose={() => setShowCalculatorModal(false)}
+        totalAmount={getTotalWithTax()}
+        paymentMethod={paymentMethod}
+        onConfirmPayment={handleConfirmCalculatorPayment}
+      />
 
       {/* Void Modal */}
       {showVoidModal && (
