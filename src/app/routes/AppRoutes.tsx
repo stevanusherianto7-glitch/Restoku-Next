@@ -16,6 +16,7 @@ const PosPage = lazy(() => import("@features/pos/ui/pages/PosPage").then(m => ({
 const ReportsPage = lazy(() => import("@features/reports/ui/pages/ReportsPage").then(m => ({ default: m.ReportsPage })));
 const ShiftPage = lazy(() => import("@features/shifts/ui/pages/ShiftPage").then(m => ({ default: m.ShiftPage })));
 const CashierSessionStartPage = lazy(() => import("@features/shifts/ui/pages/CashierSessionStartPage").then(m => ({ default: m.CashierSessionStartPage })));
+const KitchenPage = lazy(() => import("@features/kitchen/ui/pages/KitchenPage").then(m => ({ default: m.KitchenPage })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -49,38 +50,8 @@ export function AppRoutes() {
           <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
 
           {/* Protected Sub-Feature Routes (Zero 404 Dead Ends) */}
-          <Route
-            path="/orders"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Monitor Pesanan Real-time"
-                  category="Utama"
-                  description="Pantau status antrean dapur, pesanan kasir, dan pengantaran meja secara live."
-                  quickActions={[
-                    { label: "Buka POS Kasir", href: "/pos" },
-                    { label: "Lihat Dashboard", href: "/dashboard" },
-                  ]}
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/kitchen"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Dapur & Kitchen Display System (KDS)"
-                  category="Utama"
-                  description="Layar display tim dapur untuk mengonfirmasi status siap saji makanan."
-                  quickActions={[
-                    { label: "Buka POS Kasir", href: "/pos" },
-                    { label: "Kelola Menu", href: "/menu" },
-                  ]}
-                />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/orders" element={<ProtectedRoute><KitchenPage /></ProtectedRoute>} />
+          <Route path="/kitchen" element={<ProtectedRoute><KitchenPage /></ProtectedRoute>} />
           <Route path="/menu-catalog" element={<ProtectedRoute><MenuPage /></ProtectedRoute>} />
           <Route path="/menu-digital" element={<ProtectedRoute><MenuPublicPage /></ProtectedRoute>} />
 

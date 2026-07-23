@@ -13,9 +13,27 @@ export function LoginPage() {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/dashboard");
+      const userRole = useAuthStore.getState().user?.role;
+      if (userRole === "kitchen" || email.includes("chef") || email.includes("kitchen")) {
+        navigate("/kitchen");
+      } else if (userRole === "cashier" || email.includes("kasir") || email.includes("andi")) {
+        navigate("/pos");
+      } else {
+        navigate("/dashboard");
+      }
     } catch {
       // Error is handled by store
+    }
+  };
+
+  const handleQuickLogin = async (demoEmail: string, redirectPath: string) => {
+    setEmail(demoEmail);
+    setPassword("password123");
+    try {
+      await login(demoEmail, "password123");
+      navigate(redirectPath);
+    } catch {
+      // Handled
     }
   };
 
@@ -71,6 +89,36 @@ export function LoginPage() {
           <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? "Masuk..." : "Masuk"}
           </Button>
+
+          {/* Demo Login Presets */}
+          <div className="border-t border-slate-200 pt-4 space-y-2">
+            <p className="text-[11px] font-bold text-slate-500 text-center uppercase tracking-wider">
+              Uji Coba Demo Akun (Pilih Role):
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("chef@restoku.id", "/kitchen")}
+                className="py-2 px-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold hover:bg-amber-100 transition-all text-center"
+              >
+                🍳 Kitchen (Dapur)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("andi@restoku.id", "/pos")}
+                className="py-2 px-1 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-bold hover:bg-emerald-100 transition-all text-center"
+              >
+                💵 Kasir (POS)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("budi@restoku.id", "/dashboard")}
+                className="py-2 px-1 rounded-xl bg-sky-50 border border-sky-200 text-sky-900 text-xs font-bold hover:bg-sky-100 transition-all text-center"
+              >
+                👑 Owner
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
