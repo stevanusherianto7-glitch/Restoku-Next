@@ -44,12 +44,12 @@ export function DineInVerificationModal({
     setGpsError("");
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        () => {
           setIsDetectingGps(false);
           // Demo GPS verification success
           onVerified();
         },
-        (err) => {
+        () => {
           setIsDetectingGps(false);
           setGpsError("Anda berada di luar area restoran (120635m).");
         },

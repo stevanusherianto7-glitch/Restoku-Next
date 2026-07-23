@@ -73,7 +73,7 @@ export const menuHandlers = [
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    mockMenuItems.unshift(newMenu as any);
+    mockMenuItems.unshift(newMenu as unknown as (typeof mockMenuItems)[0]);
     return HttpResponse.json({ success: true, data: newMenu }, { status: 201 });
   }),
 
@@ -91,7 +91,7 @@ export const menuHandlers = [
       ...body,
       updated_at: new Date().toISOString(),
     };
-    mockMenuItems[index] = updated as any;
+    mockMenuItems[index] = updated as unknown as (typeof mockMenuItems)[0];
     return HttpResponse.json({
       success: true,
       data: updated,

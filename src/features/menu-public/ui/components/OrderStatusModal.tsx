@@ -46,7 +46,7 @@ export function OrderStatusModal({
   tableName,
   restaurantName,
 }: OrderStatusModalProps) {
-  const [orders, setOrders] = useState<OrderTrackerItem[]>(MOCK_TRACKER_ORDERS);
+  const orders: OrderTrackerItem[] = MOCK_TRACKER_ORDERS;
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   if (!isOpen) return null;

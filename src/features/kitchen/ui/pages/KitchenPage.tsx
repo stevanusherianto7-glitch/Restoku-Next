@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { AdminLayout } from "@shared/ui/templates/AdminLayout";
-import { Badge } from "@shared/ui/atoms/Badge";
 import { Button } from "@shared/ui/atoms/Button";
 
 interface KitchenTicketItem {

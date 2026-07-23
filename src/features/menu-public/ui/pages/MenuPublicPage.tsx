@@ -12,7 +12,7 @@ import { OrderStatusModal } from "@features/menu-public/ui/components/OrderStatu
 import { GalleryTab } from "@features/menu-public/ui/components/GalleryTab";
 import { ReservationTab } from "@features/menu-public/ui/components/ReservationTab";
 import { useCartStore } from "@features/menu-public/ui/stores/useCartStore";
-import { formatPrice, getMenuBadges, isAvailable } from "@features/menu/domain/entities/MenuItem";
+import { formatPrice } from "@features/menu/domain/entities/MenuItem";
 import { HALAL_LOGO_URL } from "@shared/infrastructure/media/cloudinary";
 import { Button } from "@shared/ui/atoms/Button";
 

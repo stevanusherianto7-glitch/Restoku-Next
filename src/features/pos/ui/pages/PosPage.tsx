@@ -49,7 +49,7 @@ const PAYMENT_METHODS = [
 export function PosPage() {
   const {
     items, addItem, removeItem, updateQuantity, clearCart,
-    getTotal, getDiscountAmount, getTaxAmount, getTotalWithTax, getItemCount,
+    getTotal, getDiscountAmount, getTaxAmount, getTotalWithTax,
     tableNumber, setTableNumber, paymentMethod, setPaymentMethod,
     discountPercentage, setDiscountPercentage,
     setLastOrder,
