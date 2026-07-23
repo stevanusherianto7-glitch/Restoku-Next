@@ -15,6 +15,7 @@ const TableManagementPage = lazy(() => import("@features/tables/ui/pages/TableMa
 const PosPage = lazy(() => import("@features/pos/ui/pages/PosPage").then(m => ({ default: m.PosPage })));
 const ReportsPage = lazy(() => import("@features/reports/ui/pages/ReportsPage").then(m => ({ default: m.ReportsPage })));
 const ShiftPage = lazy(() => import("@features/shifts/ui/pages/ShiftPage").then(m => ({ default: m.ShiftPage })));
+const CashierSessionStartPage = lazy(() => import("@features/shifts/ui/pages/CashierSessionStartPage").then(m => ({ default: m.CashierSessionStartPage })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -139,7 +140,7 @@ export function AppRoutes() {
 
           {/* Operasional Group */}
           <Route path="/shifts" element={<ProtectedRoute><ShiftPage /></ProtectedRoute>} />
-          <Route path="/cashier-session" element={<ProtectedRoute><ShiftPage /></ProtectedRoute>} />
+          <Route path="/cashier-session" element={<ProtectedRoute><CashierSessionStartPage /></ProtectedRoute>} />
 
           {/* Laporan Group */}
           <Route
