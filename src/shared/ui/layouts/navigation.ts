@@ -35,6 +35,7 @@ export const navigation: NavGroup[] = [
       { name: "Kasir (POS)", href: "/pos", roles: ["kasir", "manager", "owner"] },
       { name: "Monitor Pesanan", href: "/orders", roles: ["kasir", "waiter", "manager", "owner"] },
       { name: "Dapur (KDS)", href: "/kitchen", roles: ["kitchen", "waiter", "manager", "owner"] },
+      { name: "Waiter & Bar Display", href: "/waiter-bar", roles: ["waiter", "manager", "owner"] },
     ],
   },
   {

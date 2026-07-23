@@ -17,6 +17,7 @@ const ReportsPage = lazy(() => import("@features/reports/ui/pages/ReportsPage").
 const ShiftPage = lazy(() => import("@features/shifts/ui/pages/ShiftPage").then(m => ({ default: m.ShiftPage })));
 const CashierSessionStartPage = lazy(() => import("@features/shifts/ui/pages/CashierSessionStartPage").then(m => ({ default: m.CashierSessionStartPage })));
 const KitchenPage = lazy(() => import("@features/kitchen/ui/pages/KitchenPage").then(m => ({ default: m.KitchenPage })));
+const WaiterBarPage = lazy(() => import("@features/waiter/ui/pages/WaiterBarPage").then(m => ({ default: m.WaiterBarPage })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -52,6 +53,7 @@ export function AppRoutes() {
           {/* Protected Sub-Feature Routes (Zero 404 Dead Ends) */}
           <Route path="/orders" element={<ProtectedRoute><KitchenPage /></ProtectedRoute>} />
           <Route path="/kitchen" element={<ProtectedRoute><KitchenPage /></ProtectedRoute>} />
+          <Route path="/waiter-bar" element={<ProtectedRoute><WaiterBarPage /></ProtectedRoute>} />
           <Route path="/menu-catalog" element={<ProtectedRoute><MenuPage /></ProtectedRoute>} />
           <Route path="/menu-digital" element={<ProtectedRoute><MenuPublicPage /></ProtectedRoute>} />
 

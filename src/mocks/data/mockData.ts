@@ -41,6 +41,15 @@ export const mockUsers: Record<string, User> = {
     tenant_id: "t1",
     outlet_id: "outlet-1",
   },
+  waiter: {
+    id: createUserId("u5"),
+    name: "Sari Waiter",
+    email: "sari@restoku.id",
+    role: "waiter",
+    restaurantId: "rest-1",
+    tenant_id: "t1",
+    outlet_id: "outlet-1",
+  },
 };
 
 export const mockMenuItems: MenuItem[] = [

@@ -16,6 +16,8 @@ export function LoginPage() {
       const userRole = useAuthStore.getState().user?.role;
       if (userRole === "kitchen" || email.includes("chef") || email.includes("kitchen")) {
         navigate("/kitchen");
+      } else if (userRole === "waiter" || email.includes("sari") || email.includes("waiter")) {
+        navigate("/waiter-bar");
       } else if (userRole === "cashier" || email.includes("kasir") || email.includes("andi")) {
         navigate("/pos");
       } else {
@@ -95,13 +97,20 @@ export function LoginPage() {
             <p className="text-[11px] font-bold text-slate-500 text-center uppercase tracking-wider">
               Uji Coba Demo Akun (Pilih Role):
             </p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => handleQuickLogin("chef@restoku.id", "/kitchen")}
                 className="py-2 px-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold hover:bg-amber-100 transition-all text-center"
               >
                 🍳 Kitchen (Dapur)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("sari@restoku.id", "/waiter-bar")}
+                className="py-2 px-1 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 text-xs font-bold hover:bg-teal-100 transition-all text-center"
+              >
+                🍹 Waiter (Bar)
               </button>
               <button
                 type="button"
