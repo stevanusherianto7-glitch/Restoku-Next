@@ -52,7 +52,7 @@ export function SocialProof() {
           Dipercaya oleh Brand Kuliner & Franchise Terkemuka Indonesia
         </p>
 
-        {/* Infinite Running Marquee Container */}
+        {/* Infinite Running Marquee Container (Full Vivid Colors) */}
         <div className="flex overflow-hidden relative w-full">
           <div className="animate-marquee flex items-center gap-12 sm:gap-20 py-2">
             {marqueeClients.map((client, index) => (
@@ -63,7 +63,7 @@ export function SocialProof() {
                 <img
                   src={client.logo}
                   alt={client.name}
-                  className={`w-auto object-contain filter grayscale opacity-75 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 ${client.sizeClass}`}
+                  className={`w-auto object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-xs ${client.sizeClass}`}
                 />
               </div>
             ))}
