@@ -282,22 +282,93 @@ export function Hero() {
                     </div>
                   </div>
 
-                  {/* Simulated Chart Bars */}
-                  <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-bold text-slate-200">Grafik Penjualan Real-Time</span>
-                      <span className="text-slate-400 font-mono">08:00 - 21:00 WIB</span>
+                  {/* High Precision SVG Area Line Chart Visual Graphic */}
+                  <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4 shadow-xl">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                      <div>
+                        <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                          Grafik Penjualan Real-Time (Omset per Jam)
+                        </h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">Pantau tren omset & peak hours transaksi secara live</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-lg">
+                          Peak: 13:00 WIB (Rp 850rb)
+                        </span>
+                      </div>
                     </div>
-                    <div className="h-28 flex items-end gap-3 pt-4 border-b border-slate-800 pb-2">
-                      {[35, 55, 40, 75, 90, 60, 85, 95, 70, 80, 65, 50].map((h, i) => (
-                        <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
-                          <div
-                            style={{ height: `${h}%` }}
-                            className="w-full bg-gradient-to-t from-cabe-600 to-amber-400 rounded-t group-hover:from-cabe-500 group-hover:to-amber-300 transition-all"
-                          ></div>
-                          <span className="text-[9px] text-slate-400 font-mono">{i + 8}h</span>
+
+                    {/* SVG Chart Layer & Grid Lines */}
+                    <div className="relative w-full h-44 sm:h-52 pt-2">
+                      {/* Y-Axis Grid Lines & Labels */}
+                      <div className="absolute inset-0 flex flex-col justify-between pointer-events-none text-[10px] font-mono text-slate-600">
+                        <div className="border-b border-slate-800/60 pb-0.5 flex justify-between">
+                          <span>Rp 1.000.000</span>
                         </div>
-                      ))}
+                        <div className="border-b border-slate-800/60 pb-0.5 flex justify-between">
+                          <span>Rp 750.000</span>
+                        </div>
+                        <div className="border-b border-slate-800/60 pb-0.5 flex justify-between">
+                          <span>Rp 500.000</span>
+                        </div>
+                        <div className="border-b border-slate-800/60 pb-0.5 flex justify-between">
+                          <span>Rp 250.000</span>
+                        </div>
+                        <div className="border-b border-slate-800/60 pb-0.5 flex justify-between">
+                          <span>Rp 0</span>
+                        </div>
+                      </div>
+
+                      {/* SVG Chart Graphic */}
+                      <svg className="w-full h-full overflow-visible relative z-10" viewBox="0 0 500 160" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f97316" stopOpacity="0.45" />
+                            <stop offset="60%" stopColor="#e11d48" stopOpacity="0.15" />
+                            <stop offset="100%" stopColor="#e11d48" stopOpacity="0.0" />
+                          </linearGradient>
+                          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                          </filter>
+                        </defs>
+
+                        {/* Smooth Area Gradient Fill */}
+                        <path
+                          d="M 0,160 L 0,110 C 30,95 50,120 80,75 C 110,30 140,50 170,25 C 200,5 230,60 260,35 C 290,10 320,40 350,15 C 380,-10 410,45 440,30 C 470,15 485,40 500,50 L 500,160 Z"
+                          fill="url(#areaGradient)"
+                        />
+
+                        {/* Glowing Line Chart Stroke */}
+                        <path
+                          d="M 0,110 C 30,95 50,120 80,75 C 110,30 140,50 170,25 C 200,5 230,60 260,35 C 290,10 320,40 350,15 C 380,-10 410,45 440,30 C 470,15 485,40 500,50"
+                          fill="none"
+                          stroke="#f97316"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                          filter="url(#glow)"
+                        />
+
+                        {/* Peak Points & Markers */}
+                        <g>
+                          <circle cx="170" cy="25" r="5" fill="#f97316" stroke="#ffffff" strokeWidth="2" className="animate-ping opacity-75" />
+                          <circle cx="170" cy="25" r="5" fill="#f97316" stroke="#ffffff" strokeWidth="2" />
+                          <circle cx="350" cy="15" r="5" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" />
+                        </g>
+                      </svg>
+                    </div>
+
+                    {/* X-Axis Hour Timestamps */}
+                    <div className="flex justify-between text-[10px] font-mono text-slate-400 pt-2 border-t border-slate-800">
+                      <span>08:00</span>
+                      <span>10:00</span>
+                      <span>12:00</span>
+                      <span className="text-cabe-400 font-bold">13:00 (Peak Siang)</span>
+                      <span>15:00</span>
+                      <span>17:00</span>
+                      <span className="text-amber-400 font-bold">19:00 (Peak Malam)</span>
+                      <span>21:00</span>
                     </div>
                   </div>
                 </div>
