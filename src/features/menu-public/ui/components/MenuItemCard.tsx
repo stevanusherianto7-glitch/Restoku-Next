@@ -22,7 +22,8 @@ export function MenuItemCard({ menu, onAddToCart }: MenuItemCardProps) {
 
   return (
     <div
-      className={`relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-3.5 shadow-sm border border-amber-100/90 transition-all hover:shadow-md ${
+      onClick={() => available && onAddToCart(menu)}
+      className={`relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-3.5 shadow-sm border border-amber-100/90 transition-all hover:shadow-md cursor-pointer ${
         !available ? "opacity-60" : ""
       }`}
     >

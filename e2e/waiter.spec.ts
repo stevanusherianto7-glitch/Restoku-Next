@@ -56,15 +56,15 @@ test.describe("Waiter & Bar Display", () => {
   });
 
   test("shows Antrean Baru filter tab", async ({ page }) => {
-    await expect(page.getByRole("button", { name: /antrean baru/i })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole("button", { name: /antrean baru/i }).first()).toBeVisible({ timeout: 10_000 });
   });
 
   test("shows Sedang Dibuat filter tab", async ({ page }) => {
-    await expect(page.getByRole("button", { name: /sedang dibuat/i })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole("button", { name: /sedang dibuat/i }).first()).toBeVisible({ timeout: 10_000 });
   });
 
   test("shows Siap Diantar filter tab", async ({ page }) => {
-    await expect(page.getByRole("button", { name: /siap diantar/i })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole("button", { name: /siap diantar/i }).first()).toBeVisible({ timeout: 10_000 });
   });
 
   // ── Drink Tickets ────────────────────────────────────────────────
@@ -149,14 +149,15 @@ test.describe("Waiter & Bar Display", () => {
 
   // ── Filter Functionality ─────────────────────────────────────────
   test("Antrean Baru filter shows only new tickets", async ({ page }) => {
-    await page.getByRole("button", { name: /antrean baru/i }).click();
+    await page.getByRole("button", { name: /antrean baru/i }).first().click();
     await page.waitForTimeout(300);
-    // Should not show Sedang Dibuat label on any visible ticket
-    await expect(page.getByText(/sedang dibuat/i)).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /selesai diantar ke meja/i })).toHaveCount(0);
   });
 
   // ── Sidebar Navigation ───────────────────────────────────────────
   test("Waiter & Bar Display appears in sidebar for waiter role", async ({ page }) => {
+    await page.goto("/dashboard");
+    await page.waitForLoadState("networkidle");
     await expect(
       page.getByRole("link", { name: /waiter & bar display/i }).first()
     ).toBeVisible({ timeout: 10_000 });

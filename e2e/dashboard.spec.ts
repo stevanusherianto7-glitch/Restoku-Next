@@ -55,10 +55,14 @@ test.describe("Dashboard — Owner", () => {
   });
 
   test("navigates to /menu from Produk & Menu link", async ({ page }) => {
-    // Expand Manajemen group if collapsed
-    const manGroup = page.getByText("Manajemen").first();
-    if (await manGroup.isVisible()) await manGroup.click();
-    await page.getByRole("link", { name: /produk & menu/i }).first().click();
+    const manLink = page.getByRole("link", { name: /produk & menu/i }).first();
+    if (!(await manLink.isVisible().catch(() => false))) {
+      const manGroup = page.getByText("Manajemen").first();
+      if (await manGroup.isVisible().catch(() => false)) {
+        await manGroup.click();
+      }
+    }
+    await manLink.click();
     await page.waitForURL("**/menu", { timeout: 10_000 });
     await expect(page).toHaveURL(/\/menu/);
   });
