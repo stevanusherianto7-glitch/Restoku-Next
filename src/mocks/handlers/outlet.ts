@@ -84,15 +84,61 @@ export const tableHandlers = [
     return HttpResponse.json({ success: true, data: mockTables });
   }),
 
-  http.get(`${API_BASE}/tables/:id`, ({ params }) => {
-    const table = mockTables.find((t) => t.id === params.id);
-    if (!table) {
-      return HttpResponse.json(
-        { success: false, message: "Table not found" },
-        { status: 404 }
-      );
+  http.get(`${API_BASE}/restaurants/:restaurantId/tables`, () => {
+    const formattedTables = mockTables.map((t) => ({
+      id: t.id,
+      number: t.number,
+      name: `Meja ${t.number}`,
+      restaurant_id: "rest-1",
+      is_active: t.status !== "inactive",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }));
+    return HttpResponse.json({ success: true, data: formattedTables });
+  }),
+
+  http.post(`${API_BASE}/restaurants/:restaurantId/tables`, async ({ request }) => {
+    const body = (await request.json()) as { name?: string; number?: number };
+    const num = Number(body.number) || mockTables.length + 1;
+    const newTable = {
+      id: `table-${Date.now()}`,
+      number: num,
+      name: body.name || `Meja ${num}`,
+      restaurant_id: "rest-1",
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    mockTables.push({
+      id: newTable.id,
+      number: newTable.number,
+      capacity: 4,
+      status: "available",
+      qr_code: null,
+    });
+    return HttpResponse.json({ success: true, data: newTable }, { status: 201 });
+  }),
+
+  http.delete(`${API_BASE}/restaurants/:restaurantId/tables/:id`, ({ params }) => {
+    const idx = mockTables.findIndex((t) => t.id === params.id);
+    if (idx !== -1) {
+      mockTables.splice(idx, 1);
     }
-    return HttpResponse.json({ success: true, data: table });
+    return HttpResponse.json({ success: true, message: "Table deleted" });
+  }),
+
+  http.post(`${API_BASE}/restaurants/:restaurantId/tables/qr`, async ({ request }) => {
+    const body = (await request.json()) as { table_ids?: string[] };
+    const ids = body.table_ids || mockTables.map((t) => t.id);
+    const results = ids.map((id) => {
+      const table = mockTables.find((t) => t.id === id);
+      const num = table ? table.number : 1;
+      return {
+        tableId: id,
+        qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`http://localhost:3000/menu/rest-1?table=${num}`)}`,
+      };
+    });
+    return HttpResponse.json({ success: true, data: results });
   }),
 ];
 
