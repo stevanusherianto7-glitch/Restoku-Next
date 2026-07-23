@@ -5,30 +5,40 @@ export default {
   theme: {
     fontFamily: {
       sans: [
+        "'Plus Jakarta Sans'",
+        "Inter",
         "-apple-system",
         "BlinkMacSystemFont",
         "Segoe UI",
         "Roboto",
         "Helvetica Neue",
-        "Arial",
         "sans-serif",
+      ],
+      display: [
+        "'Outfit'",
+        "'Plus Jakarta Sans'",
+        "sans-serif",
+      ],
+      mono: [
+        "'JetBrains Mono'",
+        "monospace",
       ],
     },
     fontSize: {
       // Level 1: Display — Judul Utama / Banner
-      display: ["2rem", { lineHeight: "2.5rem", fontWeight: "700" }],
+      display: ["2.25rem", { lineHeight: "2.75rem", fontWeight: "800", letterSpacing: "-0.02em" }],
       // Level 2: Heading 1 — Judul Halaman
-      h1: ["1.5rem", { lineHeight: "2rem", fontWeight: "700" }],
+      h1: ["1.75rem", { lineHeight: "2.25rem", fontWeight: "700", letterSpacing: "-0.015em" }],
       // Level 3: Heading 2 — Judul Bagian / Card
-      h2: ["1.25rem", { lineHeight: "1.75rem", fontWeight: "600" }],
+      h2: ["1.375rem", { lineHeight: "1.875rem", fontWeight: "700", letterSpacing: "-0.01em" }],
       // Level 4: Subtitle — Teks Penjelas Utama
-      subtitle: ["1rem", { lineHeight: "1.5rem", fontWeight: "500" }],
+      subtitle: ["1rem", { lineHeight: "1.5rem", fontWeight: "600" }],
       // Level 5: Body — Teks Konten Utama
-      body: ["0.875rem", { lineHeight: "1.25rem", fontWeight: "400" }],
+      body: ["0.875rem", { lineHeight: "1.375rem", fontWeight: "400" }],
       // Level 6a: Caption — Teks Keterangan
-      caption: ["0.75rem", { lineHeight: "1rem", fontWeight: "500" }],
+      caption: ["0.75rem", { lineHeight: "1.125rem", fontWeight: "500" }],
       // Level 6b: Button — Teks Tombol
-      button: ["0.75rem", { lineHeight: "1rem", fontWeight: "700" }],
+      button: ["0.75rem", { lineHeight: "1rem", fontWeight: "700", letterSpacing: "0.01em" }],
       // Utility sizes for fine-grained control
       xs: ["0.75rem", { lineHeight: "1rem" }],
       sm: ["0.875rem", { lineHeight: "1.25rem" }],
@@ -38,6 +48,9 @@ export default {
       "2xl": ["1.5rem", { lineHeight: "2rem" }],
       "3xl": ["1.875rem", { lineHeight: "2.25rem" }],
       "4xl": ["2.25rem", { lineHeight: "2.5rem" }],
+      "5xl": ["3rem", { lineHeight: "1.1" }],
+      "6xl": ["3.75rem", { lineHeight: "1.05" }],
+      "7xl": ["4.5rem", { lineHeight: "1.02" }],
     },
     extend: {
       colors: {
@@ -69,7 +82,6 @@ export default {
         },
       },
       spacing: {
-        // Kelipatan 4px untuk konsistensi
         "0.5": "2px",
         "1": "4px",
         "1.5": "6px",

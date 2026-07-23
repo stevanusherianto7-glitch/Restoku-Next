@@ -4,46 +4,53 @@
 
 @layer base {
   :root {
-    --font-display-size: 2rem;
-    --font-display-leading: 2.5rem;
-    --font-h1-size: 1.5rem;
-    --font-h1-leading: 2rem;
-    --font-h2-size: 1.25rem;
-    --font-h2-leading: 1.75rem;
+    --font-display-size: 2.25rem;
+    --font-display-leading: 2.75rem;
+    --font-h1-size: 1.75rem;
+    --font-h1-leading: 2.25rem;
+    --font-h2-size: 1.375rem;
+    --font-h2-leading: 1.875rem;
     --font-subtitle-size: 1rem;
     --font-subtitle-leading: 1.5rem;
     --font-body-size: 0.875rem;
-    --font-body-leading: 1.25rem;
+    --font-body-leading: 1.375rem;
     --font-caption-size: 0.75rem;
-    --font-caption-leading: 1rem;
+    --font-caption-leading: 1.125rem;
     --font-button-size: 0.75rem;
     --font-button-leading: 1rem;
   }
 
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, sans-serif;
+    font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: var(--font-body-size);
     line-height: var(--font-body-leading);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Plus Jakarta Sans", "Outfit", sans-serif;
+    letter-spacing: -0.02em;
   }
 
   h1 {
     font-size: var(--font-h1-size);
     line-height: var(--font-h1-leading);
-    font-weight: 700;
+    font-weight: 800;
   }
 
   h2 {
     font-size: var(--font-h2-size);
     line-height: var(--font-h2-leading);
-    font-weight: 600;
+    font-weight: 700;
   }
 
   h3 {
     font-size: var(--font-subtitle-size);
     line-height: var(--font-subtitle-leading);
-    font-weight: 500;
+    font-weight: 600;
   }
 
   p {
@@ -59,5 +66,21 @@
   button {
     font-size: var(--font-button-size);
     line-height: var(--font-button-leading);
+    font-family: "Plus Jakarta Sans", sans-serif;
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
