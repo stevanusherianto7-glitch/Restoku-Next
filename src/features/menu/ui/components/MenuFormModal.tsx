@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@shared/ui/atoms/Button";
 import { Input } from "@shared/ui/atoms/Input";
 import type { MenuItem, CategoryId } from "@features/menu/domain/entities/MenuItem";
@@ -48,7 +48,10 @@ export function MenuFormModal({
   const [isConvertingWebp, setIsConvertingWebp] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  useEffect(() => {
+  const [prevProps, setPrevProps] = useState({ initialData, isOpen });
+
+  if (prevProps.initialData !== initialData || prevProps.isOpen !== isOpen) {
+    setPrevProps({ initialData, isOpen });
     if (initialData) {
       setName(initialData.name);
       setDescription(initialData.description || "");
@@ -72,7 +75,7 @@ export function MenuFormModal({
     }
     setIsConvertingWebp(false);
     setErrorMsg("");
-  }, [initialData, isOpen]);
+  }
 
   if (!isOpen) return null;
 
@@ -85,8 +88,9 @@ export function MenuFormModal({
       setErrorMsg("");
       const webpDataUrl = await convertFileToWebp(file, 0.85);
       setImageUrl(webpDataUrl);
-    } catch (err: any) {
-      setErrorMsg(err.message || "Gagal mengonversi gambar ke format WebP");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Gagal mengonversi gambar ke format WebP";
+      setErrorMsg(msg);
     } finally {
       setIsConvertingWebp(false);
     }
@@ -117,8 +121,9 @@ export function MenuFormModal({
         is_promo: isPromo,
       });
       onClose();
-    } catch (err: any) {
-      setErrorMsg(err.message || "Gagal menyimpan menu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Gagal menyimpan menu.";
+      setErrorMsg(msg);
     }
   };
 
