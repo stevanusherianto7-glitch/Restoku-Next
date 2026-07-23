@@ -48,12 +48,10 @@ export function SocialProof() {
       <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 sm:w-40 bg-gradient-to-l from-slate-950 to-transparent z-10"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Adjusted Font Style Badge */}
-        <div className="text-center mb-8">
-          <span className="text-xs font-mono font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-4 py-2 rounded-full border border-amber-500/20 inline-block shadow-sm">
-            Dipercaya oleh Brand Kuliner & Franchise Terkemuka Indonesia
-          </span>
-        </div>
+        {/* Plain Text Title (No Pill Wrapper) */}
+        <p className="text-center text-xs font-mono uppercase tracking-widest text-slate-400 mb-8">
+          Dipercaya oleh Brand Kuliner & Franchise Terkemuka Indonesia
+        </p>
 
         {/* 100% Transparent Logos on Dark Canvas with White Glow Halo */}
         <div className="flex overflow-hidden relative w-full">
