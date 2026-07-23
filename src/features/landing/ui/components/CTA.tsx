@@ -3,48 +3,61 @@ import { Button } from "@shared/ui/atoms/Button";
 
 export function CTA() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-cabe-600 to-cabe-700">
-      <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-          Siap Kelola Restoran dengan Lebih Baik?
+    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950 text-white relative overflow-hidden">
+      {/* Ambient Glow Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-r from-cabe-950/80 via-slate-950 to-orange-950/60 pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-cabe-600/20 rounded-full blur-[140px] pointer-events-none"></div>
+
+      <div className="relative max-w-4xl mx-auto text-center border border-slate-800/90 rounded-3xl p-8 sm:p-14 bg-slate-900/60 backdrop-blur-2xl shadow-2xl">
+        <span className="text-xs font-mono uppercase tracking-widest text-cabe-400 bg-cabe-500/10 px-3 py-1 rounded-full border border-cabe-500/20">
+          Digitalisasi Restoran Anda Hari Ini
+        </span>
+        <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          Siap Tingkatkan Omset & Efisiensi Restoran Anda?
         </h2>
-        <p className="text-lg text-cabe-100 mb-8 max-w-2xl mx-auto">
-          Mulai gratis sekarang. Tanpa kartu kredit. Tanpa komitmen.
-          Batalkan kapan saja.
+        <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          Bergabunglah dengan 500+ restoran dan UMKM kuliner di Indonesia. Setup dalam 5 menit, tanpa instalasi rumit.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link to="/register">
-            <Button size="lg" className="bg-white text-cabe-600 hover:bg-gray-100 w-full sm:w-auto">
-              Mulai Gratis Sekarang
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link to="/register" className="w-full sm:w-auto">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto bg-cabe-600 hover:bg-cabe-500 text-white font-black px-8 py-4 rounded-2xl shadow-xl shadow-cabe-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            >
+              Mulai Free Trial 14 Hari
             </Button>
           </Link>
-          <a href="https://wa.me/6281234567890">
-            <Button variant="ghost" size="lg" className="text-white border-white hover:bg-white/10 w-full sm:w-auto">
-              Hubungi Sales
+          <a href="https://wa.me/6281234567890" target="_blank" rel="noreferrer" className="w-full sm:w-auto">
+            <Button
+              variant="secondary"
+              size="lg"
+              className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-7 py-4 rounded-2xl transition-all"
+            >
+              💬 Konsultasi via WhatsApp
             </Button>
           </a>
         </div>
 
-        {/* Trust */}
-        <div className="mt-12 flex items-center justify-center gap-8 text-cabe-100 text-sm">
+        {/* Guarantees */}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-slate-400 border-t border-slate-800/80 pt-6">
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>Free trial 14 hari</span>
+            <span>Tanpa Kartu Kredit</span>
           </div>
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>Tanpa kartu kredit</span>
+            <span>Setup 5 Menit</span>
           </div>
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>Batalkan kapan saja</span>
+            <span>Bebas Batalkan Kapan Saja</span>
           </div>
         </div>
       </div>

@@ -1,75 +1,102 @@
 const testimonials = [
   {
-    name: "Pak Budi",
-    role: "Pemilik Warung Padang",
-    avatar: "B",
-    content: "Sejak pakai Restoku, laporan penjualan jadi gampang. Tidak perlu hitung manual lagi. Harganya juga pas di kantong warung.",
+    name: "H. Budi Santoso",
+    role: "Pemilik",
+    restaurant: "Rumah Makan Padang Sederhana (3 Cabang)",
+    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80",
+    content: "Sejak beralih ke Restoku, rekonsiliasi kasir harian jadi sangat cepat. Dulu butuh 2 jam tiap malam untuk hitung manual, sekarang cukup 5 menit dari HP. Fitur multi-outletnya sangat membantu!",
     rating: 5,
+    highlight: "Sangat membantu multi-outlet",
+    span: "lg:col-span-2",
   },
   {
-    name: "Ibu Dewi",
-    role: "Manajer Restoran Seafood",
-    avatar: "D",
-    content: "Menu digitalnya keren! Pelanggan tinggal scan QR, pesan dari HP. Antrian jadi berkurang. Staff juga senang.",
+    name: "Ibu Dewi Lestari",
+    role: "Operational Manager",
+    restaurant: "Seafood Resto & Cafe",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+    content: "Menu QR Digital Restoku bikin antrean jam makan siang jauh lebih tertata. Tamu scan QR di meja, langsung pesan. Staf kami bisa fokus melayani meja daripada catat pesanan.",
     rating: 5,
+    highlight: "Antrean berkurang 40%",
+    span: "lg:col-span-1",
   },
   {
-    name: "Mas Rendi",
-    role: "Koki di Restoran Keluarga",
-    avatar: "R",
-    content: "Pesanan masuk langsung ke layar dapur. Tidak perlu teriak-teriak lagi. Komunikasi jadi lebih mudah.",
+    name: "Chef Rendi Kurniawan",
+    role: "Head Chef & Co-Owner",
+    restaurant: "Bistro Nusantara",
+    avatar: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=150&auto=format&fit=crop&q=80",
+    content: "Layar Dapur (KDS) Restoku sangat responsif. Tiket pesanan dari kasir & QR meja langsung muncul tanpa kertas tiket fisik. Komunikasi dapur & pelayan jadi nol miskomunikasi.",
     rating: 5,
+    highlight: "Nol Miskomunikasi Dapur",
+    span: "lg:col-span-1",
+  },
+  {
+    name: "Bapak Hendra Wijaya",
+    role: "Franchise Owner",
+    restaurant: "Kedai Kopi & Toast 78",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    content: "Mode Offline Restoku terbukti menyelamatkan kami pas mati listrik & jaringan internet down. Kasir tetap jalan seperti biasa, data tersimpan aman dan ter-sync saat internet kembali.",
+    rating: 5,
+    highlight: "Penyelamat Saat Internet Down",
+    span: "lg:col-span-2",
   },
 ];
 
 export function Testimonials() {
   return (
-    <section id="testimoni" className="py-20 px-4 sm:px-6 lg:px-8">
+    <section id="testimoni" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950 text-white relative">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            Dipercaya oleh Ratusan Restoran
+        {/* Section Header */}
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <span className="text-xs font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-3.5 py-1.5 rounded-full border border-amber-500/20">
+            Kisah Sukses Mitra
+          </span>
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+            Dipercaya oleh Ratusan Pemilik Restoran & Kuliner
           </h2>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Lihat apa kata mereka yang sudah menggunakan Restoku.
+          <p className="mt-4 text-base sm:text-lg text-slate-400">
+            Lihat bagaimana Restoku membantu warung, kafe, hingga jaringan restoran berkembang pesat.
           </p>
         </div>
 
-        {/* Testimonials Grid */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
+        {/* Bento Grid Testimonials */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {testimonials.map((t) => (
             <div
-              key={testimonial.name}
-              className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"
+              key={t.name}
+              className={`p-6 sm:p-8 rounded-3xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl flex flex-col justify-between hover:border-slate-700 transition-all duration-300 ${t.span}`}
             >
-              {/* Rating */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className="w-5 h-5 text-emas-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
+              <div>
+                {/* Header Rating & Verified Badge */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex text-amber-400 text-sm gap-0.5">
+                    {"★".repeat(t.rating)}
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1">
+                    ✓ Verified Partner
+                  </span>
+                </div>
+
+                {/* Highlight Tag */}
+                <h4 className="text-sm font-extrabold text-white mb-3">
+                  "{t.highlight}"
+                </h4>
+
+                {/* Testimonial Quote */}
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6 italic">
+                  "{t.content}"
+                </p>
               </div>
 
-              {/* Content */}
-              <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                "{testimonial.content}"
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-cabe-100 text-cabe-600 flex items-center justify-center font-semibold">
-                  {testimonial.avatar}
-                </div>
+              {/* Author Info */}
+              <div className="pt-4 border-t border-slate-800/80 flex items-center gap-3.5">
+                <img
+                  src={t.avatar}
+                  alt={t.name}
+                  className="w-11 h-11 rounded-full object-cover border-2 border-cabe-500/50 shadow-md"
+                />
                 <div>
-                  <div className="text-sm font-medium text-gray-900">{testimonial.name}</div>
-                  <div className="text-xs text-gray-500">{testimonial.role}</div>
+                  <h5 className="text-xs sm:text-sm font-extrabold text-white">{t.name}</h5>
+                  <p className="text-[11px] font-semibold text-cabe-400">{t.role} • {t.restaurant}</p>
                 </div>
               </div>
             </div>
