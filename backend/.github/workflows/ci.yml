@@ -1,0 +1,395 @@
+name: CI — Restoku Quality Gate (Hardened)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 🛡️ Audit-followup: cancel run duplikat (push beruntun tidak tumpang-tindih)
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# 🛡️ gitleaks-action breaking change: GITHUB_TOKEN wajib utk scan PR.
+# Tanpa ini, Secret Scan FAIL (bukan karena secret bocor, tapi config).
+permissions:
+  contents: read          # checkout
+  security-events: write  # gitleaks upload SARIF / scan PR
+  pull-requests: read     # akses diff PR untuk gitleaks
+
+# ─────────────────────────────────────────────────────────────
+# Job "secrets" (Secret Scan) didefinisikan di dalam `jobs:` di bawah.
+# ─────────────────────────────────────────────────────────────
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # Job 0: Secret Scanning (gitleaks + trufflehog) — fail-fast
+  #   Jalan di PR & push; blokir bila ada credential bocor.
+  # ─────────────────────────────────────────────────────────────
+  secrets:
+    name: "Secret Scan"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # gitleaks butuh full history utk scan commit lama
+
+      - name: Gitleaks — detect secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "true"
+
+      - name: Trufflehog — second-layer scan (entropy + regex)
+        uses: trufflesecurity/trufflehog@main
+        with:
+          # Filesystem scan (bukan diff) → tidak error saat BASE==HEAD di push event
+          path: ./
+          extra_args: --only-verified --json
+
+  # ─────────────────────────────────────────────────────────────
+  # Job 0.5: PHP SAST (Psalm) — pengganti CodeQL-PHP.
+  #   CodeQL GitHub TIDAK support PHP; Psalm emit SARIF native ->
+  #   alert keamanan muncul di Security tab + PR (seperti CodeQL).
+  #   Scope app/, errorLevel=1 (hanya isu kritis/kerentanan) + taint.
+  # ─────────────────────────────────────────────────────────────
+  php-sast:
+    name: "PHP SAST (Psalm)"
+    runs-on: ubuntu-latest
+    # security-events:write wajib utk upload SARIF ke code scanning.
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath
+          tools: composer
+          coverage: none
+
+      - name: Install Composer dependencies (autoload + dev tools)
+        # Psalm butuh autoloader + classmap app/ lengkap.
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run Psalm (SAST) and emit SARIF
+        run: |
+          php vendor/bin/psalm --config=psalm.xml --no-cache --no-progress --output-format=sarif --report=psalm.sarif
+        # Job tidak fail CI walau ada security finding; SARIF tetap ter-upload
+        # & alert muncul di Security tab.
+        continue-on-error: true
+
+      - name: Upload Psalm SARIF to code scanning
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: psalm.sarif
+          category: psalm-php
+
+  # ─────────────────────────────────────────────────────────────
+  # Job 1: Backend PHPUnit + coverage gate + composer audit
+  # ─────────────────────────────────────────────────────────────
+  phpunit:
+    name: "PHPUnit"
+    runs-on: ubuntu-latest
+    needs: build
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: [ "6379:6379" ]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Vite build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vite-build
+          path: public/build/
+
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath, redis
+          coverage: pcov
+          ini-values: "pcov.directory=app"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      # 🛡️ reproducible build: pakai lock, bukan `composer update`.
+      # TANPA --no-dev: test butuh dev-deps (phpunit, laravel/phpunit, collision).
+      - name: Install Composer dependencies (from lock)
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      # 🛡️ supply-chain: laporkan advisory, tapi jangan blokir CI.
+      # Composer 2.10 treat renamed/abandoned package (larastan→larastan/larastan)
+      # sebagai error exit 1; kita log saja, review via Dependabot/PR.
+      - name: Composer audit (security advisories)
+        continue-on-error: true
+        run: composer audit --format=json
+
+      - name: Prepare CI environment
+        run: |
+          cp .env.example .env
+          # Aktifkan Redis beneran (service container) untuk RedisConfigTest
+          sed -i 's/^REDIS_HOST=.*/REDIS_HOST=127.0.0.1/' .env
+          sed -i 's/^SESSION_DRIVER=.*/SESSION_DRIVER=redis/' .env
+          sed -i 's/^CACHE_STORE=.*/CACHE_STORE=redis/' .env
+          sed -i 's/^QUEUE_CONNECTION=.*/QUEUE_CONNECTION=redis/' .env
+          php artisan key:generate
+          mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/logs
+          php artisan migrate --force --seed
+
+      - name: Run PHPUnit with coverage gate
+        # --min = fail bila coverage < 70% (gate regresi)
+        run: php artisan test --coverage --coverage-clover=coverage.xml --min=70
+
+      - name: Upload backend coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-coverage
+          path: coverage.xml
+          retention-days: 14
+
+  # ─────────────────────────────────────────────────────────────
+  # Job 5: Schema-per-Tenant isolation (Postgres) — Fase 2 proof
+  #   Mengaktifkan isolasi schema-fisik di CI. Skip di sqlite lokal.
+  #   Bukti runtime code-path TenantConnection::isSharded()=true.
+  # ─────────────────────────────────────────────────────────────
+  sharding-postgres:
+    name: "Schema-per-Tenant (Postgres)"
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: restoku
+        ports: [ "5432:5432" ]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: dom, curl, libxml, mbstring, zip, pdo, pgsql, pdo_pgsql, bcmath
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Prepare CI environment (Postgres + sharding)
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/logs
+
+      - name: Run schema-per-tenant isolation tests
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: restoku
+          DB_USERNAME: postgres
+          DB_PASSWORD: secret
+          DB_SHARDING_ENABLED: "true"
+        run: |
+          php artisan migrate --force
+          php artisan test --filter=Sharding
+
+  # ─────────────────────────────────────────────────────────────
+  # Job 6: Frontend Vitest + npm audit
+  # ─────────────────────────────────────────────────────────────
+  vitest:
+    name: "Vitest"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install npm dependencies
+        run: npm ci --legacy-peer-deps
+
+      # 🛡️ supply-chain: laporkan advisory, tapi jangan blokir CI
+      # (biarkan test + coverage jalan; review manual via Dependabot/PR).
+      - name: NPM audit (security)
+        continue-on-error: true
+        run: npm audit --audit-level=high
+
+      - name: Run ESLint code check
+        run: npm run lint
+
+      - name: Run Vitest with coverage
+        run: npm run test:coverage
+        env:
+          LARAVEL_BYPASS_ENV_CHECK: 1
+
+      - name: Upload frontend coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: coverage/
+          retention-days: 14
+
+  # ─────────────────────────────────────────────────────────────
+  # Job 3: Vite Production Build
+  # ─────────────────────────────────────────────────────────────
+  build:
+    name: "Vite Build (production)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install npm dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Upload Vite build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vite-build
+          path: public/build/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────
+  # Job 4: Playwright E2E (Redis-asli via service)
+  # ─────────────────────────────────────────────────────────────
+  playwright:
+    name: "Playwright (${{ matrix.browser }})"
+    runs-on: ubuntu-latest
+    needs: [phpunit, vitest, build]
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports: [ "6379:6379" ]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit, "Mobile Chrome"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath, redis
+          coverage: none
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      # 🛡️ reproducible build: pakai lock, bukan `composer update`.
+      # TANPA --no-dev: test butuh dev-deps (phpunit, laravel/phpunit, collision).
+      - name: Install Composer dependencies (from lock)
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Install npm dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Prepare CI environment
+        run: |
+          cp .env.example .env
+          sed -i 's/^REDIS_HOST=.*/REDIS_HOST=127.0.0.1/' .env
+          sed -i 's/^SESSION_DRIVER=.*/SESSION_DRIVER=redis/' .env
+          sed -i 's/^CACHE_STORE=.*/CACHE_STORE=redis/' .env
+          sed -i 's|APP_URL=http://localhost$|APP_URL=http://localhost:8000|' .env
+          touch database/database.sqlite
+          mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/logs
+          php artisan key:generate
+          php artisan migrate --force --seed
+
+      - name: Download Vite build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vite-build
+          path: public/build/
+
+      - name: Install Playwright browser — ${{ matrix.browser }}
+        run: |
+          BROWSER="${{ matrix.browser }}"
+          if [ "$BROWSER" = "Mobile Chrome" ]; then
+            npx playwright install --with-deps chromium
+          else
+            npx playwright install --with-deps "$BROWSER"
+          fi
+
+      - name: Start Laravel server
+        run: |
+          php artisan serve --host=0.0.0.0 --port=8000 &
+          for i in $(seq 1 20); do
+            if curl -sf http://127.0.0.1:8000 > /dev/null 2>&1; then echo "Server up!"; break; fi
+            sleep 3
+          done
+
+      - name: "E2E HTTP Route Check"
+        run: npm run test:e2e -- --base-url http://127.0.0.1:8000
+
+      - name: "Playwright E2E — ${{ matrix.browser }}"
+        run: npx playwright test --project="${{ matrix.browser }}"
+        env:
+          CI: true
+
+      - name: "Upload Playwright report — ${{ matrix.browser }}"
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: "playwright-report-${{ matrix.browser }}"
+          path: playwright-report/
+          retention-days: 14
+
+      - name: "Print Laravel log on failure"
+        if: failure()
+        run: |
+          if [ -f storage/logs/laravel.log ]; then cat storage/logs/laravel.log; fi
