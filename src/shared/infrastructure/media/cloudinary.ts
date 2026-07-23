@@ -1,9 +1,9 @@
 /**
- * Cloudinary media helper.
+ * Cloudinary media helper & Client-side WebP converter.
  *
  * Restoku stores Cloudinary `public_id` (e.g. "menu/nasi-goreng-spesial") or full image URLs in
  * `MenuItem.image_url`. This helper derives a Cloudinary CDN delivery URL with on-the-fly
- * transformations (width/height/quality/format auto).
+ * transformations (width/height/quality/format webp).
  *
  * The cloud name is public by design (required in the delivery URL) and is
  * safe to ship to the browser. Set VITE_CLOUDINARY_CLOUD_NAME to override.
@@ -36,13 +36,13 @@ function buildTransformSegment(t: CloudinaryTransform): string {
   if (t.height) parts.push(`h_${t.height}`);
   if (t.crop) parts.push(`c_${t.crop}`);
   parts.push(`q_${t.quality ?? "auto"}`);
-  parts.push(`f_${t.format ?? "auto"}`);
+  parts.push(`f_${t.format ?? "webp"}`);
   return parts.join(",");
 }
 
 /**
  * Resolve a menu image reference to a Cloudinary delivery URL with dynamic CDN transformation.
- * Supports both Cloudinary public_ids and HTTP/HTTPS image URLs.
+ * Automatically converts to WebP format by default.
  * 
  * @param ref `public_id` (e.g. "menu/nasi-goreng") or a full HTTP(S) image URL.
  * @param transform optional on-the-fly transformations (width, height, crop, quality, format).
@@ -54,13 +54,50 @@ export function getCloudinaryUrl(
   if (!ref) return MENU_IMAGE_FALLBACK;
   if (/^data:/i.test(ref)) return ref;
 
-  // External HTTP/HTTPS URLs — return as-is for 100% rendering stability
+  // External HTTP/HTTPS URLs — return as-is
   if (/^https?:\/\//i.test(ref)) {
     return ref;
   }
 
   const segment = buildTransformSegment(transform);
 
-  // Cloudinary public_id — deliver via Cloudinary Upload API
+  // Cloudinary public_id — deliver via Cloudinary Upload API (auto-convert to WebP)
   return `${UPLOAD_DELIVERY_BASE}/${segment}/${ref}`;
+}
+
+/**
+ * Convert any local image File (JPG, PNG, GIF) into WebP format client-side.
+ * @param file The image File object from input[type="file"]
+ * @param quality Compression quality between 0.1 and 1.0 (default: 0.85)
+ * @returns Promise<string> WebP Data URL string (`data:image/webp;base64,...`)
+ */
+export function convertFileToWebp(file: File, quality = 0.85): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("File yang diunggah harus berupa gambar"));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Canvas context creation failed"));
+          return;
+        }
+        ctx.drawImage(img, 0, 0);
+        const webpDataUrl = canvas.toDataURL("image/webp", quality);
+        resolve(webpDataUrl);
+      };
+      img.onerror = () => reject(new Error("Gagal membaca file gambar"));
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => reject(new Error("Gagal membaca file"));
+    reader.readAsDataURL(file);
+  });
 }

@@ -20,18 +20,18 @@ describe("cloudinary helper", () => {
     );
   });
 
-  it("builds a Cloudinary delivery URL from a public_id", () => {
+  it("builds a Cloudinary delivery URL with auto WebP conversion from a public_id", () => {
     const url = getCloudinaryUrl("menu/nasi-goreng", { width: 400, height: 400, crop: "fill" });
     expect(url).toBe(
-      `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/w_400,h_400,c_fill,q_auto,f_auto/menu/nasi-goreng`
+      `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/w_400,h_400,c_fill,q_auto,f_webp/menu/nasi-goreng`
     );
   });
 
-  it("uses default transform when none provided", () => {
+  it("uses default WebP transform when none provided", () => {
     const url = getCloudinaryUrl("menu/es-teh");
     expect(url).toContain("/image/upload/");
     expect(url.endsWith("/menu/es-teh")).toBe(true);
     expect(url).toContain("q_auto");
-    expect(url).toContain("f_auto");
+    expect(url).toContain("f_webp");
   });
 });

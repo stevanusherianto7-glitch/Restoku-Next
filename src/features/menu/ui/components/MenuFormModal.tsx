@@ -3,7 +3,7 @@ import { Button } from "@shared/ui/atoms/Button";
 import { Input } from "@shared/ui/atoms/Input";
 import type { MenuItem, CategoryId } from "@features/menu/domain/entities/MenuItem";
 import { createCategoryId } from "@features/menu/domain/entities/MenuItem";
-import { getCloudinaryUrl, MENU_IMAGE_FALLBACK } from "@shared/infrastructure/media/cloudinary";
+import { getCloudinaryUrl, convertFileToWebp, MENU_IMAGE_FALLBACK } from "@shared/infrastructure/media/cloudinary";
 
 interface MenuFormModalProps {
   isOpen: boolean;
@@ -45,6 +45,7 @@ export function MenuFormModal({
   const [isPopular, setIsPopular] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [isPromo, setIsPromo] = useState(false);
+  const [isConvertingWebp, setIsConvertingWebp] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
@@ -69,10 +70,27 @@ export function MenuFormModal({
       setIsNew(false);
       setIsPromo(false);
     }
+    setIsConvertingWebp(false);
     setErrorMsg("");
   }, [initialData, isOpen]);
 
   if (!isOpen) return null;
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsConvertingWebp(true);
+      setErrorMsg("");
+      const webpDataUrl = await convertFileToWebp(file, 0.85);
+      setImageUrl(webpDataUrl);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Gagal mengonversi gambar ke format WebP");
+    } finally {
+      setIsConvertingWebp(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -201,10 +219,36 @@ export function MenuFormModal({
             />
           </div>
 
+          {/* Auto WebP File Upload */}
+          <div className="rounded-xl bg-slate-50 p-3 border border-slate-200/80 space-y-2">
+            <label className="block text-xs font-bold text-slate-700">
+              📁 Unggah File Gambar (Otomatis Auto-Convert ke WebP)
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                disabled={isConvertingWebp}
+                className="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cabe-50 file:text-cabe-600 hover:file:bg-cabe-100 cursor-pointer"
+              />
+              {isConvertingWebp && (
+                <span className="text-xs font-bold text-cabe-600 animate-pulse whitespace-nowrap">
+                  🔄 Converting WebP...
+                </span>
+              )}
+            </div>
+            {imageUrl.startsWith("data:image/webp") && (
+              <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+                ✅ Berhasil dikonversi ke format <strong>WebP</strong> (Client-Side HTML5 Canvas)
+              </span>
+            )}
+          </div>
+
           {/* Cloudinary Asset ID / Image URL */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1">
-              Foto Menu (Cloudinary public_id / Image URL)
+              Foto Menu (Cloudinary public_id / WebP URL)
             </label>
             <div className="flex gap-3 items-center">
               <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-100 border border-slate-200">
@@ -225,7 +269,7 @@ export function MenuFormModal({
 
             {/* Quick Preset Selector */}
             <div className="mt-2.5">
-              <span className="text-[11px] font-semibold text-slate-500 mb-1.5 block">Pilih dari Cloudinary Presets:</span>
+              <span className="text-[11px] font-semibold text-slate-500 mb-1.5 block">Atau Pilih dari Cloudinary Presets:</span>
               <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-200/80">
                 {CLOUDINARY_PRESETS.map((preset) => (
                   <button
@@ -284,7 +328,7 @@ export function MenuFormModal({
             <Button type="button" variant="outline" size="md" onClick={onClose}>
               Batal
             </Button>
-            <Button type="submit" variant="primary" size="md" disabled={isSubmitting}>
+            <Button type="submit" variant="primary" size="md" disabled={isSubmitting || isConvertingWebp}>
               {isSubmitting ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "+ Tambah Menu"}
             </Button>
           </div>
