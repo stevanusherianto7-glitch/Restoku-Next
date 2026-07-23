@@ -12,6 +12,7 @@ interface QrItem {
   tableNumber: number;
   tableName: string;
   qrUrl: string;
+  targetUrl: string;
 }
 
 export function TableManagementPage() {
@@ -41,6 +42,9 @@ export function TableManagementPage() {
     const table = tables.find((t) => t.id === tableId);
     const results = await generateQr([tableId]);
     const firstResult = results[0];
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+    const targetUrl = firstResult?.targetUrl || `${origin}/menu/${restaurantId}?table=${table?.number || 1}`;
+
     if (firstResult && table) {
       setQrModalData({
         title: `Stiker QR Code - ${table.name}`,
@@ -49,6 +53,7 @@ export function TableManagementPage() {
             tableNumber: table.number,
             tableName: table.name,
             qrUrl: firstResult.qrUrl,
+            targetUrl,
           },
         ],
       });
@@ -59,12 +64,16 @@ export function TableManagementPage() {
     if (tables.length === 0) return;
     const tableIds = tables.map((t) => t.id);
     const results = await generateQr(tableIds);
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+
     const items: QrItem[] = results.map((res) => {
       const table = tables.find((t) => t.id === res.tableId);
+      const num = table ? table.number : 1;
       return {
-        tableNumber: table ? table.number : 1,
-        tableName: table ? table.name : "Meja",
+        tableNumber: num,
+        tableName: table ? table.name : `Meja ${num}`,
         qrUrl: res.qrUrl,
+        targetUrl: res.targetUrl || `${origin}/menu/${restaurantId}?table=${num}`,
       };
     });
     setQrModalData({
@@ -80,7 +89,7 @@ export function TableManagementPage() {
         <div>
           <h2 className="text-lg font-extrabold text-slate-900">Manajemen Meja Pelanggan</h2>
           <p className="text-xs text-slate-500">
-            Kelola nomor meja, pantau ketersediaan, dan cetak stiker QR Self-Order untuk pelanggan.
+            Kelola nomor meja, pantau ketersediaan, dan cetak stiker QR Self-Order yang mengarahkan langsung ke Buku Menu Digital.
           </p>
         </div>
         <div className="flex gap-2">
@@ -217,7 +226,7 @@ export function TableManagementPage() {
             <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
               <div>
                 <h3 className="text-base font-extrabold text-slate-900">{qrModalData.title}</h3>
-                <p className="text-xs text-slate-500">Pindai QR ini dari ponsel untuk membuka Menu Digital Self-Order</p>
+                <p className="text-xs text-slate-500">Pindai QR ini dari ponsel untuk membuka Buku Menu Digital Customer View</p>
               </div>
               <button
                 onClick={() => setQrModalData(null)}
@@ -249,12 +258,12 @@ export function TableManagementPage() {
                     Scan Meja #{item.tableNumber} untuk Pesan
                   </span>
                   <a
-                    href={item.qrUrl}
+                    href={item.targetUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-2 text-[10px] font-bold text-cabe-600 hover:underline"
+                    className="mt-3 text-xs font-bold text-cabe-600 hover:underline flex items-center justify-center gap-1 bg-cabe-50 px-3 py-1.5 rounded-xl border border-cabe-200/80 transition-all hover:bg-cabe-100"
                   >
-                    Unduh Stiker HD ↗
+                    📱 Buka Menu Digital ↗
                   </a>
                 </div>
               ))}

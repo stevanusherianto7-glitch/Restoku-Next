@@ -127,15 +127,20 @@ export const tableHandlers = [
     return HttpResponse.json({ success: true, message: "Table deleted" });
   }),
 
-  http.post(`${API_BASE}/restaurants/:restaurantId/tables/qr`, async ({ request }) => {
+  http.post(`${API_BASE}/restaurants/:restaurantId/tables/qr`, async ({ request, params }) => {
     const body = (await request.json()) as { table_ids?: string[] };
     const ids = body.table_ids || mockTables.map((t) => t.id);
+    const restId = (params.restaurantId as string) || "rest-1";
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+
     const results = ids.map((id) => {
       const table = mockTables.find((t) => t.id === id);
       const num = table ? table.number : 1;
+      const targetCustomerUrl = `${origin}/menu/${restId}?table=${num}`;
       return {
         tableId: id,
-        qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`http://localhost:3000/menu/rest-1?table=${num}`)}`,
+        targetUrl: targetCustomerUrl,
+        qrUrl: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(targetCustomerUrl)}`,
       };
     });
     return HttpResponse.json({ success: true, data: results });

@@ -110,10 +110,32 @@ export const menuHandlers = [
     return HttpResponse.json({ success: true, message: "Menu deleted" });
   }),
 
-  http.get(`${API_BASE}/public/menus/:restaurantId`, () => {
-    const menus = mockMenuItems.filter(
-      (m) => m.status === "active"
-    );
-    return HttpResponse.json({ success: true, data: menus });
+  http.get(`${API_BASE}/public/menu/:restaurantId`, ({ params }) => {
+    const activeMenus = mockMenuItems.filter((m) => m.status === "active");
+    return HttpResponse.json({
+      success: true,
+      data: {
+        restaurant: {
+          id: (params.restaurantId as string) || "rest-1",
+          name: "Restoku Central Kuliner",
+          logo_url: null,
+        },
+        menus: activeMenus,
+      },
+    });
+  }),
+  http.get(`${API_BASE}/public/menus/:restaurantId`, ({ params }) => {
+    const activeMenus = mockMenuItems.filter((m) => m.status === "active");
+    return HttpResponse.json({
+      success: true,
+      data: {
+        restaurant: {
+          id: (params.restaurantId as string) || "rest-1",
+          name: "Restoku Central Kuliner",
+          logo_url: null,
+        },
+        menus: activeMenus,
+      },
+    });
   }),
 ];
