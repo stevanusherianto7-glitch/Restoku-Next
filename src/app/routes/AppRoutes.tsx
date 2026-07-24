@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Spinner } from "@shared/ui/atoms/Spinner";
 import { useAuthStore } from "@features/auth/ui/stores/useAuthStore";
 import { ErrorBoundary } from "@shared/ui/components/ErrorBoundary";
-import { FeaturePlaceholderPage } from "@shared/ui/pages/FeaturePlaceholderPage";
 
 const LandingPage = lazy(() => import("@features/landing/ui/pages/LandingPage").then(m => ({ default: m.LandingPage })));
 const LoginPage = lazy(() => import("@features/auth/ui/pages/LoginPage").then(m => ({ default: m.LoginPage })));
@@ -19,6 +18,23 @@ const ShiftPage = lazy(() => import("@features/shifts/ui/pages/ShiftPage").then(
 const CashierSessionStartPage = lazy(() => import("@features/shifts/ui/pages/CashierSessionStartPage").then(m => ({ default: m.CashierSessionStartPage })));
 const KitchenPage = lazy(() => import("@features/kitchen/ui/pages/KitchenPage").then(m => ({ default: m.KitchenPage })));
 const WaiterBarPage = lazy(() => import("@features/waiter/ui/pages/WaiterBarPage").then(m => ({ default: m.WaiterBarPage })));
+
+const InventoryPage = lazy(() => import("@features/inventory/ui/pages/InventoryPage").then(m => ({ default: m.InventoryPage })));
+const SuppliersPage = lazy(() => import("@features/suppliers/ui/pages/SuppliersPage").then(m => ({ default: m.SuppliersPage })));
+const StockOpnamePage = lazy(() => import("@features/stock-opname/ui/pages/StockOpnamePage").then(m => ({ default: m.StockOpnamePage })));
+const InventoryDashboardPage = lazy(() => import("@features/inventory/ui/pages/InventoryDashboardPage").then(m => ({ default: m.InventoryDashboardPage })));
+const OutletComparisonPage = lazy(() => import("@features/outlet/ui/pages/OutletComparisonPage").then(m => ({ default: m.OutletComparisonPage })));
+const CashFlowPage = lazy(() => import("@features/finance/ui/pages/CashFlowPage").then(m => ({ default: m.CashFlowPage })));
+const ProfitLossPage = lazy(() => import("@features/finance/ui/pages/ProfitLossPage").then(m => ({ default: m.ProfitLossPage })));
+const ExpensesPage = lazy(() => import("@features/finance/ui/pages/ExpensesPage").then(m => ({ default: m.ExpensesPage })));
+const OutletSettingsPage = lazy(() => import("@features/settings/ui/pages/OutletSettingsPage").then(m => ({ default: m.OutletSettingsPage })));
+const DiscountsPage = lazy(() => import("@features/settings/ui/pages/DiscountsPage").then(m => ({ default: m.DiscountsPage })));
+const PrinterSettingsPage = lazy(() => import("@features/settings/ui/pages/PrinterSettingsPage").then(m => ({ default: m.PrinterSettingsPage })));
+const TtsSettingsPage = lazy(() => import("@features/settings/ui/pages/TtsSettingsPage").then(m => ({ default: m.TtsSettingsPage })));
+const EmployeesPage = lazy(() => import("@features/employees/ui/pages/EmployeesPage").then(m => ({ default: m.EmployeesPage })));
+const InventoryAlertsPage = lazy(() => import("@features/inventory/ui/pages/InventoryAlertsPage").then(m => ({ default: m.InventoryAlertsPage })));
+const ReviewsPage = lazy(() => import("@features/reviews/ui/pages/ReviewsPage").then(m => ({ default: m.ReviewsPage })));
+const OwnerSettingsPage = lazy(() => import("@features/settings/ui/pages/OwnerSettingsPage").then(m => ({ default: m.OwnerSettingsPage })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -59,218 +75,38 @@ export function AppRoutes() {
           <Route path="/menu-digital" element={<ProtectedRoute><MenuPublicPage /></ProtectedRoute>} />
 
           {/* Inventaris Group */}
-          <Route
-            path="/inventory"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Stok & Bahan Baku"
-                  category="Inventaris"
-                  description="Kelola persediaan bahan baku, resep hidangan, dan peringatan stok menipis."
-                  quickActions={[
-                    { label: "Katalog Menu", href: "/menu" },
-                    { label: "Supplier", href: "/suppliers" },
-                  ]}
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/suppliers"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Manajemen Supplier"
-                  category="Inventaris"
-                  description="Daftar mitra vendor penyedia bahan baku dan histori pesanan barang."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/stock-opname"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Stock Opname Restoran"
-                  category="Inventaris"
-                  description="Audit penyesuaian jumlah fisik bahan baku dengan pencatatan sistem."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard-inventory"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Dasbor Analitik Stok"
-                  category="Inventaris"
-                  description="Grafik tingkat pemakaian bahan baku dan estimasi waktu peremajaan stok."
-                />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
+          <Route path="/suppliers" element={<ProtectedRoute><SuppliersPage /></ProtectedRoute>} />
+          <Route path="/stock-opname" element={<ProtectedRoute><StockOpnamePage /></ProtectedRoute>} />
+          <Route path="/dashboard-inventory" element={<ProtectedRoute><InventoryDashboardPage /></ProtectedRoute>} />
 
           {/* Operasional Group */}
           <Route path="/shifts" element={<ProtectedRoute><ShiftPage /></ProtectedRoute>} />
           <Route path="/cashier-session" element={<ProtectedRoute><CashierSessionStartPage /></ProtectedRoute>} />
 
           {/* Laporan Group */}
-          <Route
-            path="/outlet-comparison"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Perbandingan Kinerja Outlet"
-                  category="Laporan"
-                  description="Analisa komparatif omset dan performa transaksi antar cabang restoran."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/cash-flow"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Laporan Arus Kas (Cash Flow)"
-                  category="Laporan"
-                  description="Pantau arus uang masuk tunai/QRIS dan pengeluaran operasional restoran."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profit-loss"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Laporan Laba & Rugi"
-                  category="Laporan"
-                  description="Kalkulasi bersih pendapatan restoran dikurangi COGS dan beban usaha."
-                />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/outlet-comparison" element={<ProtectedRoute><OutletComparisonPage /></ProtectedRoute>} />
+          <Route path="/cash-flow" element={<ProtectedRoute><CashFlowPage /></ProtectedRoute>} />
+          <Route path="/profit-loss" element={<ProtectedRoute><ProfitLossPage /></ProtectedRoute>} />
           <Route path="/reports/products" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
           <Route path="/reports/shifts" element={<ProtectedRoute><ShiftPage /></ProtectedRoute>} />
           <Route path="/reports/tables" element={<ProtectedRoute><TableManagementPage /></ProtectedRoute>} />
 
           {/* Keuangan Group */}
-          <Route
-            path="/expenses"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Pengeluaran & Biaya Operasional"
-                  category="Keuangan"
-                  description="Pencatatan beban sewa tempat, listrik, belanja bahan, dan gaji staf."
-                />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
 
           {/* Pengaturan Group */}
-          <Route
-            path="/settings/outlet"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Pengaturan Profil Outlet"
-                  category="Pengaturan"
-                  description="Atur nama restoran, alamat cabang, nomor telepon, dan jam operasional."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings/discounts"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Pengaturan Diskon & Pajak (PB1)"
-                  category="Pengaturan"
-                  description="Konfigurasi pajak restoran 10%, service charge, dan voucher promo."
-                />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/settings/outlet" element={<ProtectedRoute><OutletSettingsPage /></ProtectedRoute>} />
+          <Route path="/settings/discounts" element={<ProtectedRoute><DiscountsPage /></ProtectedRoute>} />
           <Route path="/settings/qr" element={<ProtectedRoute><QrCodeMejaPage /></ProtectedRoute>} />
-          <Route
-            path="/settings/printer"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Konfigurasi Printer Struk"
-                  category="Pengaturan"
-                  description="Hubungkan printer thermal Bluetooth/LAN untuk cetak nota otomatis."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings/tts"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Pengaturan Panggilan Suara (TTS)"
-                  category="Pengaturan"
-                  description="Panggilan otomatis nomor antrean via speaker suara sintetis."
-                />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/settings/printer" element={<ProtectedRoute><PrinterSettingsPage /></ProtectedRoute>} />
+          <Route path="/settings/tts" element={<ProtectedRoute><TtsSettingsPage /></ProtectedRoute>} />
 
           {/* Owner View Group */}
-          <Route
-            path="/owner/employees"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Kelola Data Karyawan & Hak Akses"
-                  category="Owner View"
-                  description="Kelola akun staf, pin kasir, dan batas wewenang transaksi."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/owner/inventory/alerts"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Peringatan Stok & Restock"
-                  category="Owner View"
-                  description="Notifikasi otomatis saat persediaan bahan baku kritis di bawah minimum."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/owner/reviews"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Integrasi Google Review"
-                  category="Owner View"
-                  description="Kumpulkan ulasan kepuasan pelanggan secara otomatis setelah pembayaran."
-                />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/owner/settings"
-            element={
-              <ProtectedRoute>
-                <FeaturePlaceholderPage
-                  title="Pengaturan Utama Mitra Restoku"
-                  category="Owner View"
-                  description="Konfigurasi langganan SaaS, langganan WhatsApp bot, dan profil bisnis."
-                />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/owner/employees" element={<ProtectedRoute><EmployeesPage /></ProtectedRoute>} />
+          <Route path="/owner/inventory/alerts" element={<ProtectedRoute><InventoryAlertsPage /></ProtectedRoute>} />
+          <Route path="/owner/reviews" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />
+          <Route path="/owner/settings" element={<ProtectedRoute><OwnerSettingsPage /></ProtectedRoute>} />
 
           {/* 404 Route */}
           <Route path="*" element={<NotFoundPage />} />
